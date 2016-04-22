@@ -1,0 +1,42 @@
+{
+  "name": "GraphMovieStudios API",
+  "version": "0.1.0",
+  "description": "by pxseven 2016",
+  "title": "GraphMovieStudios API",
+  "url" : "http://ser3.graphmovie.com",
+  "header": {
+    "title": "GraphMovieStudios API"
+  },
+  "order": [
+    "EmailLogin",
+	"QrcodeIn",
+	"QrcodeCkLogin",
+	"ScanQrcode",
+	"SendVerifyEmail",
+	"VerifyEmail",
+	"CkEmail",
+	"CkNickname",
+	"ChangeEmail",
+	"ChangePassword",
+	"SignNewUser",
+	"Feedback",
+	"SkinList",
+	"CreatWithDb",
+	"CreatWithNew",
+	"CreatWithInput",
+	"ReportPercent",
+	"ImageS4DelWorkIdUploadKey",
+	"SetUpUpload",
+	"UploadPic",
+	"UpdatePicMsg",
+	"GiveUpWork",
+	"DoubanMsg",
+	"CreatScript",
+	"MyWorks",
+	"MyWorksBySort"
+  ],
+  "template": {
+  	"withCompare": true,
+  	"withGenerator": true
+  }
+}
