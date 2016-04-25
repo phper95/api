@@ -22,6 +22,8 @@
 	"Feedback",
 	"SkinList",
 	"CreatWithDb",
+	"CreatWithDbForInput",
+	"GetDbRelatedInfo",
 	"CreatWithNew",
 	"CreatWithInput",
 	"ReportPercent",
@@ -33,7 +35,8 @@
 	"DoubanMsg",
 	"CreatScript",
 	"MyWorks",
-	"MyWorksBySort"
+	"MyWorksBySort",
+	"Grade"
   ],
   "template": {
   	"withCompare": true,

@@ -37,4 +37,7 @@ define('ANDROID_SUPPORT_FLOOR_VER',37);
 //加密密钥
 define('MD_KEY', '123#@!123');
 
+//首个完成被官方收录的作品可获得的金币数
+define('FIRST_FINISHED_WORK_REWORD',500);
+
 ?>

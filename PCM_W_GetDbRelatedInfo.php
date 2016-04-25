@@ -1,11 +1,11 @@
 <?php
 /**
-* @api {post} /gmspanel/interface/zh-cn/3.1/PCM_W_CreatWithDbForInput.php 通过豆瓣URL新建一部作品(仅供内部接口调用)
+* @api {post} /gmspanel/interface/zh-cn/3.1/PCM_W_GetDbRelatedInfo.php 通过豆瓣URL获取相关作品信息
 * @apiPermission pxseven
 * @apiVersion 0.1.0
-* @apiName CreatWithDbForInput
+* @apiName GetDbRelatedInfo
 * @apiGroup Work
-* @apiSampleRequest http://ser3.graphmovie.com/gmspanel/interface/zh-cn/3.1/PCM_W_CreatWithDbForInput.php
+* @apiSampleRequest http://ser3.graphmovie.com/gmspanel/interface/zh-cn/3.1/PCM_W_GetDbRelatedInfo.php
 
 * @apiDescription 用户输入一个豆瓣电影URL点击关联后,请求此接口来生成作品ID
 
@@ -21,66 +21,93 @@
 * @apiSuccess (ResponseJSON) {String} error 接口响应出错时的错误描述.
 * @apiSuccess (ResponseJSON) {String} debug 接口响应出错时的过程描述,调试用.
 * @apiSuccess (ResponseJSON) {String} desc status=2时需要弹窗提示此内容.
-* @apiSuccess (ResponseJSON) {String} workid 生成的workid加密串,为32位MD5.
+* @apiSuccess (ResponseJSON) {Object} dbmsg 此豆瓣链接关联的电影信息.
 * @apiSuccess (ResponseJSON) {Integer} ingcount 当前正在制作这部作品的其他作者有几个.
 * @apiSuccess (ResponseJSON) {Integer} okcount 当前已经上线的这部影片的图解有几部.
-* @apiSuccess (ResponseJSON) {String} poptitle 可以用作提示窗的标题,如:"已有2部该片的图解正在创作",为什么不是"2名图解师正在制作..."的原因是:剧集的缘故同一个用户可以占同一个豆瓣ID的电影多次.
-* @apiSuccess (ResponseJSON) {String} popdesc 可以用作提示窗的正文.
-* @apiSuccess (ResponseJSON) {Array[]} ingmsg 若不想采用<code>popdesc</code>来展示其他作者信息,可用该结构化数据来展示.
-* @apiSuccess (ResponseJSON) {Object} msg_ing 信息的结构体，在JSON中是不存在此key的，这里只是为了说明，具体可参见下面Success-Response中的示例.
+* @apiSuccess (ResponseJSON) {Integer} weicount 当前已经上线的这部影片的微图解有几部（目前没有统计微图解的数量，暂时返回0）.
+* @apiSuccess (ResponseJSON) {Array[]} msg_ing 信息的结构体，在JSON中是不存在此key的，这里只是为了说明，具体可参见下面Success-Response中的示例.
 * @apiSuccess (ResponseJSON) {String} msg_ing.ingid 记录ID，保证各个msg结构此键值不同，客户端使用.
 * @apiSuccess (ResponseJSON) {String} msg_ing.userid 作者信息中的用户ID.
 * @apiSuccess (ResponseJSON) {String} msg_ing.nickname 作者信息中的昵称.
 * @apiSuccess (ResponseJSON) {String} msg_ing.avatar 作者信息中的头像URL.
-* @apiSuccess (ResponseJSON) {String} msg_ing.addtime 作者开始创作该部图解的时间,如"1月13日".
+* @apiSuccess (ResponseJSON) {String} msg_ing.update_time 作者最后制作该图解的时间,如"9小时前".
 * @apiSuccess (ResponseJSON) {Integer} msg_ing.percent 作者已经完成的进度[0-100],如40,65,99.
-* @apiSuccess (ResponseJSON) {Array[]} okmsg 若不想采用<code>popdesc</code>来展示其他作者信息,可用该结构化数据来展示.
-* @apiSuccess (ResponseJSON) {Object} msg_ok 信息的结构体，在JSON中是不存在此key的，这里只是为了说明，具体可参见下面Success-Response中的示例.
+* @apiSuccess (ResponseJSON) {Array[]} msg_ok 信息的结构体，在JSON中是不存在此key的，这里只是为了说明，具体可参见下面Success-Response中的示例.
 * @apiSuccess (ResponseJSON) {String} msg_ok.okid 记录ID，保证各个msg结构此键值不同，客户端使用.
 * @apiSuccess (ResponseJSON) {String} msg_ok.userid 作者信息中的用户ID.
 * @apiSuccess (ResponseJSON) {String} msg_ok.nickname 作者信息中的昵称.
 * @apiSuccess (ResponseJSON) {String} msg_ok.avatar 作者信息中的头像URL.
 * @apiSuccess (ResponseJSON) {Integer} msg_ok.workname 作者已上线作品的名称.
-* @apiSuccess (ResponseJSON) {String} msg_ok.played 作者已上线作品的播放数.
-* @apiSuccess (ResponseJSON) {String} msg_ok.like 作者已上线作品的点赞数.
+* @apiSuccess (ResponseJSON) {Integer} msg_ok.worksubname 作者已上线作品的副标题.
+* @apiSuccess (ResponseJSON) {Integer} msg_ok.workscore 作者已上线作品的分数.
+* @apiSuccess (ResponseJSON) {Integer} msg_ok.workscorenum 作者已上线作品参与评分的人数.
+* @apiSuccess (ResponseJSON) {String} first_finished_reword 首个完成被官方收录的作品可获得的金币数.
 
 *
 * @apiSuccessExample Success-Response[提交成功]:
 
-*     {
-*       "status": 1,
-*       "usetime": 0.0024,
-*       "error": "",
-*       "debug": "",
-*       "desc": "",
-*       "workid": "d6a2e3c51e2434ed72ca2e8ecfe9a34c",
-*		"ingcount": 2,
-*		"poptitle": "该片图解[1部已上线/2部正在创作]:",
-*		"popdesc": "可爱小炒肉自1月10日开始图解,目前进度7%;灵台无计自1月15日开始图解,目前进度2%;已上线的图解有1部:静默森林作品-《泰坦尼克号》,11.2万人阅读/6335人喜欢;",
-*		"ingmsg": [
-*					{
-*						"ingid": "6a9bb2e2a33c690fee7142e46e445679",
-*						"userid": "9999999H",
-*						"nickname": "佳怡生活",
-*						"avatar": "http://tp1.sinaimg.cn/1750477504/180/40036623679/1",
-*						"addtime": "1月13日",
-*						"percent": 65
-*					}
-*					...更多{}
-*				]
-*		"okmsg": [
-*					{
-*						"okid": "367e2d465aa31e2ab261c8cccb106d31",
-*						"userid": "9999999H",
-*						"nickname": "静默森林",
-*						"avatar": "http://tp1.sinaimg.cn/1750477504/180/40036623679/1",
-*						"workname": "泰坦尼克号",
-*						"played": "11.2万",
-*						"like": "6335",
-*					}
-*					...更多{}
-*				]
-*     }
+*	{
+*	"status": 1,
+*	"usetime": "2.03422",
+*	"error": "",
+*	"debug": "na",
+*	"desc": "",
+*	"dbmsg": {
+*		"name": "谁的青春不迷茫",
+*		"rating": "6.5",
+*		"directors": [
+*		{
+*		"celeid": "1324487",
+*		"name": "姚婷婷"
+*		}
+*		],
+*		"actors": [
+*		{
+*		"celeid": "1342133",
+*		"name": "白敬亭"
+*		},
+*		{
+*		"celeid": "1355324",
+*		"name": "郭姝彤"
+*		},更多....
+*		],
+*		"tags": [
+*		"爱情"
+*		],
+*		"region": "中国大陆",
+*		"pubday": [
+*		"2016-04-22(中国大陆)"
+*		]
+*		},
+*		"query": "",
+*		"ingcount": 1,
+*		"okcount": 1,
+*		"weicount": 0,
+*	"ingmsg": [
+*	*	{
+*	*	"ingid": "93d48ab9ab3a6a55276c0a84db887466",
+*	*	"userid": "9999999O",
+*	*	"nickname": "图解电影-鞭基部",
+*	*	"avatar": "http://imgs4.graphmovie.com/appimage/bj_1.jpg",
+*	*	"update_time": "9小时前",
+*	*	"percent": "0"
+*	*	}
+*		],
+*	"okmsg": [
+		{
+		"okid": "f540eda2cd172baf51a4b5e80ad7162e",
+		"userid": "9993Z39W",
+		"nickname": "撇撇酱",
+		"avatar": "http://ser3.graphmovie.com/gmspanel/appimages/avatars/875782/20160108231835.jpg",
+		"workname": "撸片室の《谁的青春不迷茫》",
+		"worksubname": "我们还年轻，年轻就可以失败。",
+		"workscore": "0",
+		"workscorenum": "1"
+		}
+*	],
+*	"first_finished_reword": 500
+*	}
+
 
 *
 * @apiError PostError 请求的参数缺失或者参数格式错误.
@@ -138,6 +165,7 @@
 	require_once(dirname(__FILE__).'/'.'inc/methods.inc.php');
 	require_once(dirname(__FILE__).'/'.'inc/config.inc.php');
 	require_once(dirname(__FILE__).'/'.'inc/time.methods.inc.php');
+	require_once(dirname(__FILE__).'/'.'inc/post.methods.inc.php');
 	
 	//时间记录
 	$start_time = starttime();
@@ -145,6 +173,7 @@
 	//获取JSON基本模板
 	$json = getBasicJsonModel();
 	$json["desc"] = "";
+	$json["dbmsg"] = "";
 	$json["query"] = "";
 
 	//20160304 内测结束 
@@ -346,11 +375,39 @@
 	};
 	
 	//OK豆瓣验证通过
+
+//获取该豆瓣关联的电影信息
+$post_string = 'ck='.strtolower(md5($subject_id.'graphmoviestudiosapi')).'&subid='.$subject_id;
+//echo $post_string;
+
+//适配本地调试处理
+if($_SERVER['HTTP_HOST']=='localhost'){
+	$response_json = request_by_curl('http://localhost/gms/PCM_OFC_DoubanMsg.php',$post_string);
+}else{
+	$response_json = request_by_curl('http://ser3.graphmovie.com/gmspanel/interface/zh-cn/3.1/PCM_OFC_DoubanMsg.php',$post_string);
+}
+
+
+$json_struct = @json_decode($response_json);
+$db_info = array();
+if($json_struct && isset($json_struct->status)){
+	if($json_struct->status==1){
+		$db_info['name'] = $json_struct->dbmsg->title;
+		$db_info['rating'] =$json_struct->dbmsg->rating;
+		$db_info['directors'] =$json_struct->dbmsg->directors;
+		$db_info['actors'] = $json_struct->dbmsg->actors;
+		$db_info['tags'] = $json_struct->dbmsg->tags;
+		$db_info['region'] = $json_struct->dbmsg->zone;
+		$db_info['pubday'] = $json_struct->dbmsg->pubday;
+		$json['dbmsg'] = $db_info;
+
+	}
+}
 	
 	//检测电影数据库是否存在此ID 没有就存入待抓取队列 补完电影数据库
 	//目前mdb_film中没有一条记录有豆瓣的KEY 但是这里当做有来处理 
 	//未来抓取回来的豆瓣信息同 上线前关联豆瓣时光的人工生成信息对比 如有找到 则补完在相关的时光key下 如未找到 则新插入mdb_film
-	$query = 'SELECT * FROM `mdb_film` WHERE `douban_key`=\''.$subject_id.'\';';
+	/*$query = 'SELECT * FROM `mdb_film` WHERE `douban_key`=\''.$subject_id.'\';';
 	$result = mysqli_query($connection,$query);
 	if($result){
 		if(mysqli_num_rows($result)==0){
@@ -377,7 +434,7 @@
 				}
 			}
 		}
-	}
+	}*/
 	
 	//查询这个作者是否已经注册过这个作品了
 	//这里不要求一个作者只能占一个ID一次 因为有剧集
@@ -387,46 +444,51 @@
 	$poptitle = '当前没有人在图解此影片哟！';
 	$popdesc = '';
 	$ingmsg = array();
-	$query = 'SELECT * FROM `pcmaker_work` WHERE `db_id`=\''.$subject_id.'\' AND `state`=1;';
+	$query = 'SELECT *, count(distinct `user_id`) FROM `pcmaker_work` WHERE `db_id`=\''.$subject_id.'\' AND `state`=1 GROUP BY `user_id`;';
+	//只需取五条且user_id不同
+	$query1 = 'SELECT *,count(distinct `user_id`) FROM `pcmaker_work` WHERE `db_id`=\''.$subject_id.'\' AND `state`=1 GROUP BY `user_id` LIMIT 5;';
+
 	$result = mysqli_query($connection,$query);
+	//$json['query'] = $query1;
+	//查正在图解的总人数
+	$ingcount =0;
 	if($result){
-		if(mysqli_num_rows($result)>0){
+		$ingcount = mysqli_num_rows($result);
+	}
+
+	//查五条数据
+	$result1 = mysqli_query($connection,$query1);
+	$ingmsg = array();
+	if($result1){
+		if(mysqli_num_rows($result1)>0){
 			$i=0;
-			while($i<mysqli_num_rows($result)){
-				$record = mysqli_fetch_assoc($result);
+
+			while($i<mysqli_num_rows($result1)){
+				$record = mysqli_fetch_assoc($result1);
 				//查作者信息
 				$query = 'SELECT * FROM `client_user` WHERE `id`='.$record['user_id'].';';
 				$user_result = mysqli_query($connection,$query);
 				if($user_result && mysqli_num_rows($user_result)>0){
 					$user = mysqli_fetch_assoc($user_result);
-					
+
 					$msg = array(
 						"ingid" => $record['work_key'],
 						"userid" => (string)userIdKeyEncode($user['id']),
 						"nickname" => (string)$user['name'],
 						"avatar" => $user['avatar']?$user['avatar']:'http://imgs4.graphmovie.com/appimage/app_default_avatar.jpg',
-						"addtime" => (string)getDateStyle(strtotime($record['add_time'])),
+						"update_time" => (string)getDateStyle(strtotime($record['update_time'])),
 						"percent" => $record['progress']
 					);
-					
-					$popdesc .= $user['name'].' 自'.(string)getDateStyle(strtotime($record['add_time'])).'开始图解,目前进度'.$record['progress'].'%;';
-					$res_ingcount++;
-					$ingmsg[count($ingmsg)] = $msg;
-					
+					$ingmsg[] = $msg;
 				}
 				$i++;
 				
 			}
 		}
 	}
-	
-	if($res_ingcount==0){
-		$poptitle = '当前没有人在图解此影片哟！';
-		$popdesc = '数百万小伙伴翘首企盼，还在等什么(ง •̀_•́)ง';
-		$ingmsg = array();
-	}else{
-		$poptitle = '已有'.$res_ingcount.'部该片的图解正在创作:';	
-	}
+
+	//微图解作品数
+	$weicount = 0;
 	
 	//检查此作品是否已经有人上线
 	//mdb_movie_v_link
@@ -434,16 +496,20 @@
 	$okdesc = '';
 	$okmsg = array();
 	$query = 'SELECT * FROM `mdb_movie_v_link` WHERE `link_type`=1 AND `link_url` LIKE \'%douban.com/subject/'.$subject_id.'/%\';';
+	//只查2条记录用于界面显示
+	$query2 = 'SELECT * FROM `mdb_movie_v_link` WHERE `link_type`=1 AND `link_url` LIKE \'%douban.com/subject/'.$subject_id.'/%\' ORDER BY `add_time` LIMIT 2;';
 	$result = mysqli_query($connection,$query);
-	if($result){
-		if(mysqli_num_rows($result)>0){
+	$result2 = mysqli_query($connection,$query2);
+	//已上线作品数
+	$okcount = mysqli_num_rows($result);
+	if($result2){
+		if(mysqli_num_rows($result2)>0){
 			$i=0;
-			while($i<mysqli_num_rows($result)){
-				$popdesc .= '已上线的图解有'.mysqli_num_rows($result).'部:';
-				
-				$record = mysqli_fetch_assoc($result);
+			while($i<mysqli_num_rows($result2)){
+
+				$record = mysqli_fetch_assoc($result2);
 				//查询movie信息
-				$query = 'SELECT `name`,`played`,`ding`,`grapher` FROM `movie` WHERE `id`='.$record['movie_id'].' AND `open`=1;';
+				$query = 'SELECT `name`,`sub_title`,`score`,`played`,`ding`,`grapher` FROM `movie` WHERE `id`='.$record['movie_id'].' AND `open`=1;';
 				$movie_result = mysqli_query($connection,$query);
 				if($movie_result && mysqli_num_rows($movie_result)>0){
 					$movie = mysqli_fetch_assoc($movie_result);
@@ -452,6 +518,12 @@
 					//查作者信息
 					$query = 'SELECT * FROM `client_user` WHERE `id`='.$graphers[0].';';
 					$user_result = mysqli_query($connection,$query);
+
+					//查评分人数（movie_v_gmscore_record）
+					$score_query = 'SELECT * FROM `movie_v_gmscore_record` WHERE `movie_id`='.$record['movie_id'].';';
+					$score_result = mysqli_query($connection,$query);
+					$score_num = mysqli_num_rows($score_result);
+
 					if($user_result && mysqli_num_rows($user_result)>0){
 						$user = mysqli_fetch_assoc($user_result);
 						
@@ -461,14 +533,19 @@
 							"nickname" => (string)$user['name'],
 							"avatar" => $user['avatar']?$user['avatar']:'http://imgs4.graphmovie.com/appimage/app_default_avatar.jpg',
 							"workname" => $movie['name'],
-							"played" => (string)number_2_numberFont($movie['played']),
-							"like" => (string)number_2_numberFont($movie['ding'])
+							"worksubname" => $movie['sub_title'],
+							"workscore" => $movie['score'],
+							"workscorenum" => (string)number_2_numberFont($score_num),
+							//"played" => (string)number_2_numberFont($movie['played']),
+							//"like" => (string)number_2_numberFont($movie['ding'])
 						);
+
+						$okmsg[] = $msg;
 						
-						$popdesc .= $user['name'].'作品-《'.$movie['name'].'》,'.(string)number_2_numberFont($movie['played']).'人阅读/'.(string)number_2_numberFont($movie['ding']).'人喜欢;';
-						$res_okcount++;
-						$okmsg[count($okmsg)] = $msg;
-						
+						//$popdesc .= $user['name'].'作品-《'.$movie['name'].'》,'.(string)number_2_numberFont($movie['played']).'人阅读/'.(string)number_2_numberFont($movie['ding']).'人喜欢;';
+						//$res_okcount++;
+						//$okmsg[count($okmsg)] = $msg;
+
 					}
 				}
 				$i++;
@@ -479,71 +556,17 @@
 		}
 	}
 	
-	$poptitle = '该片图解['.$res_okcount.'部已上线/'.$res_ingcount.'部正在创作]:';
-	
-	
-	//检查该用户是否多次提交此作品
-	//无需查询
-	
-	//INSERT 生成workid
-	$workkey = $post_userid.$post_token.time().rand(10000, 100000);
-	$workkey = md5($workkey);
-	$query = 'INSERT INTO pcmaker_work(
-							work_key,
-							user_id,
-							title,
-							sub_title,
-							editor_note,
-							author,
-							actor,
-							intro,
-							showtime,
-							zone,
-							score,
-							bpic_id,
-							spic_id,
-							firstpage_id,
-							jian,
-							tags,
-							tags_text,
-							season_id,
-							act_id,
-							page_count,
-							size,
-							state,
-							movie_id,
-							progress,
-							save_path,
-							db_url,
-							db_id,
-							film_id,
-							add_time,
-							update_time,
-							bpic_md5,
-							spic_md5,
-							firstpage_md5,
-							tv_type,
-							creat_time
-							) VALUES ('.
-				'\''.$workkey.'\','.
-				 $post_userid.','.
-				 '\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',7.0,0,0,0,0,\'\',\'\',0,0,0,0,1,0,0,\'\',\''.$dburl.'\',\''.$subject_id.'\',0,now(),now(),\'\',\'\',\'\',0,now()'.
-	');';
-	$result = mysqli_query($connection, $query);
-	
-	if(!$result){
-		$json['workid'] = '0';
-	}else{
-		$json['workid'] = $workkey;
-	}
-	
-	$json['ingcount'] = $res_ingcount;
-	$json['okcount'] = $res_okcount;
-	$json['poptitle'] = $poptitle;
-	$json['popdesc'] = $popdesc;
+	//$poptitle = '该片图解['.$res_okcount.'部已上线/'.$res_ingcount.'部正在创作]:';
+
+	$json['ingcount'] = $ingcount;
+	$json['okcount'] = $okcount;
+	$json['weicount'] = $weicount;
+	//$json['poptitle'] = $poptitle;
+	//$json['popdesc'] = $popdesc;
 	$json['ingmsg'] = $ingmsg;
 	$json['okmsg'] = $okmsg;
-	
+	$json['first_finished_reword'] = FIRST_FINISHED_WORK_REWORD;
+
 	//结束
 	$json['status']= 1;
 	$json['usetime'] = endtime($start_time);

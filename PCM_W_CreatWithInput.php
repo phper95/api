@@ -14,22 +14,22 @@
 * @apiParam (POST) {String} userid 用户的userid，必须为登录用户才可访问此接口
 * @apiParam (POST) {String} token 用户的登录时返回的token，用于验证用户是否合法
 
-* @apiParam (POST) {String} [movie_name=""] 影片信息-作品名称
-* @apiParam (POST) {String} [movie_direct=""] 影片信息-导演名
-* @apiParam (POST) {String} [movie_actor=""] 影片信息-主要演员名
-* @apiParam (POST) {String} [movie_score=""] 影片信息-影片评分
-* @apiParam (POST) {String} [movie_time=""] 影片信息-上映年份
-* @apiParam (POST) {String} [movie_countory=""] 影片信息-上映地区
-* @apiParam (POST) {String} [subtitle=""] 影片信息-副标题
-* @apiParam (POST) {String} [movie_bza=""] 影片信息-编者按
-* @apiParam (POST) {String} [movie_intro=""] 影片信息-剧情简介
-* @apiParam (POST) {String} [movie_type=""] 影片信息-影片类型 恐怖惊悚等，多个类型之间可用、（顿号）,（逗号）' '(空格隔开)，接口不限制类型数量
-* @apiParam (POST) {String} [movie_istv=""] 影片信息-剧别 0-电影 1-单季剧 2-多季剧
+* @apiParam (POST) {String} movie_name 影片信息-作品名称
+* @apiParam (POST) {String} movie_direct 影片信息-导演名
+* @apiParam (POST) {String} movie_actor 影片信息-主要演员名
+* @apiParam (POST) {String} movie_score 影片信息-影片评分
+* @apiParam (POST) {String} movie_time 影片信息-上映年份
+* @apiParam (POST) {String} movie_countory 影片信息-上映地区
+* @apiParam (POST) {String} subtitle 影片信息-副标题
+* @apiParam (POST) {String} movie_bza 影片信息-编者按
+* @apiParam (POST) {String} movie_intro 影片信息-剧情简介
+* @apiParam (POST) {String} movie_type 影片信息-影片类型 恐怖惊悚等，多个类型之间可用、（顿号）,（逗号）' '(空格隔开)，接口不限制类型数量
+* @apiParam (POST) {String} movie_istv 影片信息-剧别 0-电影 1-单季剧 2-多季剧
 * @apiParam (POST) {String} [movie_snum=""] 影片信息-剧集-第几季
 * @apiParam (POST) {String} [movie_enum=""] 影片信息-剧集-第几集
-* @apiParam (POST) {String} [bpic_md5=""] 影片信息-640x460封面的图片的MD5值
-* @apiParam (POST) {String} [spic_md5=""] 影片信息-640x230封面的图片的MD5值
-* @apiParam (POST) {String} [fpic_md5=""] 影片信息-960x540封面的图片的MD5值
+* @apiParam (POST) {String} bpic_md5 影片信息-640x460封面的图片的MD5值
+* @apiParam (POST) {String} spic_md5 影片信息-640x230封面的图片的MD5值
+* @apiParam (POST) {String} fpic_md5 影片信息-960x540封面的图片的MD5值
 * @apiParam (POST) {String} [dburl=""] 用户在关联中输入的豆瓣URL,接口会验证URL是否合法
 
 
@@ -39,11 +39,6 @@
 * @apiSuccess (ResponseJSON) {String} debug 接口响应出错时的过程描述,调试用.
 * @apiSuccess (ResponseJSON) {String} desc status=2时需要弹窗提示此内容.
 * @apiSuccess (ResponseJSON) {String} workid 生成的workid加密串,为32位MD5.
-* @apiSuccess (ResponseJSON) {String} [ingcount=''] 若通过豆瓣创建则返回此参数，正在图解此影片的人数.
-* @apiSuccess (ResponseJSON) {String} [poptitle=''] 若通过豆瓣创建则返回此参数，形如“该片图解[0部已上线/9部正在创作]”字样的标题.
-* @apiSuccess (ResponseJSON) {String} [popdesc=''] 若通过豆瓣创建则返回此参数，返回开始制作的时间及制作进度的描述.
-* @apiSuccess (ResponseJSON) {String} [ingmsg=''] 若通过豆瓣创建则返回此参数，返回正在图解此片的ingid，userid，nickname，avatar，addtime，percent（进度）等详情.
-* @apiSuccess (ResponseJSON) {String} [okmsg=''] 若通过豆瓣创建则返回此参数，返回作者信息
 
 *
 * @apiSuccessExample Success-Response[提交成功]:
@@ -526,7 +521,7 @@ $json['error'] = '';
 
 
 
-if(isset($ingcount)){
+/*if(isset($ingcount)){
 	$json['ingcount'] = $ingcount;
 }
 
@@ -544,7 +539,7 @@ if(isset($ingmsg)){
 
 if(isset($okmsg)){
 	$json['okmsg'] = $okmsg;
-}
+}*/
 
 
 $json_code = json_encode($json);
