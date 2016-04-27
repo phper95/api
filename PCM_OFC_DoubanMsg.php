@@ -282,6 +282,7 @@
 		"othernames" => "",
 		"imdb" => "",
 		"rating" => "",
+		"ratingperson" => "",
 		"intro" => ""
 	);
 	
@@ -295,10 +296,17 @@
 	$json['dbmsg']['title'] = trim($split_b[0]);
 	
 	//剧情简介
-	//<span property="v:summary" class=""> -- </span>
+	//<span property="v:summary" class=""> -- </span>(有的电影简介没有class)
 	$split_a = explode('<span property="v:summary" class="">',$db_html);
-	$split_b = explode('</span>',$split_a[1]);
-	$json['dbmsg']['intro'] = trim($split_b[0]);
+	if(isset($split_a[1])){
+		$split_b = explode('</span>',$split_a[1]);
+		$json['dbmsg']['intro'] = trim($split_b[0]);
+	}else{
+		$split_a = explode('<span property="v:summary">',$db_html);
+		$split_b = explode('</span>',$split_a[1]);
+		$json['dbmsg']['intro'] = trim($split_b[0]);
+	}
+
 	
 	//剩余的先清楚多余部分的html代码
 	//<div class="subject clearfix">
@@ -516,7 +524,28 @@
 		 $split_b = explode('<',$split_a[1]);
 		 $json['dbmsg']['rating'] = trim($split_b[0]);
 	 }
-	 
+
+
+//豆瓣评分人数
+/*  <span property="v:votes">62651</span>
+*/
+//正则匹配
+$rule  = '/property="v:votes">[^<]*</i';
+preg_match_all($rule,$db_html,$result);
+
+//print_r($result);
+//echo '<hr/>';
+
+for($i=0;$i<count($result[0]);$i++){
+	//  property="v:runtime" content="137">
+	//取
+	$split_a = explode('property="v:votes">',$result[0][$i]);
+	$split_b = explode('<',$split_a[1]);
+	$json['dbmsg']['ratingperson'] = trim($split_b[0]);
+}
+
+
+
 	
 	//链接数据库 如果该影片的豆瓣信息没有存储过 就存入
 	

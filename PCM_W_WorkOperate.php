@@ -1,27 +1,27 @@
 <?php
 /**
-* @api {post} /gmspanel/interface/zh-cn/3.1/PCM_W_Grade.php 为作品评分
+* @api {post} /gmspanel/interface/zh-cn/3.1/PCM_W_WorkOperate.php 作者对作品上下线操作
 * @apiPermission pxseven
 * @apiVersion 0.1.0
-* @apiName Grade
+* @apiName WorkOperate
 * @apiGroup Work
-* @apiSampleRequest http://ser3.graphmovie.com/gmspanel/interface/zh-cn/3.1/PCM_W_Grade.php
+* @apiSampleRequest http://ser3.graphmovie.com/gmspanel/interface/zh-cn/3.1/PCM_W_WorkOperate.php
 
-* @apiDescription 通过workid对作品评分
+* @apiDescription 通过workid对作品进行上下线操作，必须为用户自己的作品
 
 * @apiParam (POST) {String} [pk=""] 用户PC的机器码(MAC地址)
 * @apiParam (POST) {Integer} [v=0] 用户GraphMovieStudios的内部版本号
 * @apiParam (POST) {String} userid 用户的userid，必须为登录用户才可访问此接口
 * @apiParam (POST) {String} token 用户的登录时返回的token,用于验证用户是否合法
 * @apiParam (POST) {String} workid 用户正在创作作品的作品ID，为<code>CreatWithDb</code>和<code>CreatWithNew</code>接口返回的workid字段，32位MD5值
-* @apiParam (POST) {Integer} grade 该作品的分数
-* @apiParam (POST) {Integer} sort 该作品的状态，目前可针对已上线作品和官方收录作品进行评分，已上线作品为2，官方收录为3
-*
+* @apiParam (POST) {Integer} operate 作品的操作码0-下线；1-上线
+
 * @apiSuccess (ResponseJSON) {Integer} status 接口响应状态（0-失败,1-成功,2-需要弹出提示框,提示desc内容）.
 * @apiSuccess (ResponseJSON) {Float} usetime 接口响应时间,调试用.
 * @apiSuccess (ResponseJSON) {String} error 接口响应出错时的错误描述.
 * @apiSuccess (ResponseJSON) {String} debug 接口响应出错时的过程描述,调试用.
 * @apiSuccess (ResponseJSON) {String} desc status=2时需要弹窗提示此内容.
+* @apiSuccess (ResponseJSON) {String} workid 操作成功返回该作品workid.
 
 *
 * @apiSuccessExample Success-Response[提交成功]:
@@ -32,6 +32,7 @@
 *       "error": "",
 *       "debug": "",
 *       "desc": "",
+*       "workid": "f787307554daaab7f13ad7e17843117b",
 *     }
 
 *
@@ -62,7 +63,7 @@
 *       "desc": "额服务器开小差了,请稍后重试..."
 *     }
 
-*     TokenTimeOut:
+*    TokenTimeOut:
 
 *     {
 *       "status": 2,
@@ -72,13 +73,54 @@
 *       "desc": "会话超时,请重新登录"
 *     }
 *
+
+*    WorkIdWrongUser:
+
 *     {
 *       "status": 3,
 *       "usetime": 0.0024,
-*       "error": "InsertError",
+*       "error": "WorkIdWrongUser",
 *       "debug": "",
-*       "desc": "评分失败，请稍后再试"
+*       "desc": "不能操作别人的作品哦"
 *     }
+
+
+*   ErrorWorkId:
+
+*  	{
+*       "status": 4,
+*       "usetime": 0.0024,
+*       "error": "ErrorWorkId",
+*       "debug": "",
+*       "desc": "作品校验失败"
+*  	}
+*
+*
+
+*   WorkCantModify:
+
+* 	{
+*       "status": 5,
+*       "usetime": 0.0024,
+*       "error": "WorkCantModify",
+*       "debug": "",
+*       "desc": "作品已收录，无法修改"
+*  	}
+*
+*
+*
+
+*   UpdateError:
+
+* 	{
+*       "status": 6,
+*       "usetime": 0.0024,
+*       "error": "UpdateError",
+*       "debug": "",
+*       "desc": "操作失败,请稍后重试..."
+*  	}
+*
+*
 */
 
 
@@ -120,7 +162,7 @@
 	//模拟请求采用的是request payload 发上来的参数
 	$request_body = file_get_contents('php://input');
 	$data = json_decode($request_body);
-	if($data && count($data)>0 && (!isset($_POST) || count($_POST)==0) && isset($data->userid) && strlen($data->userid)>0 && isset($data->token) && strlen($data->token)>0 && isset($data->workid) && strlen($data->workid)>0 && isset($data->grade) && strlen($data->grade)>0 && isset($data->sort) && strlen($data->sort)>0){
+	if($data && count($data)>0 && (!isset($_POST) || count($_POST)==0) && isset($data->userid) && strlen($data->userid)>0 && isset($data->token) && strlen($data->token)>0 && isset($data->workid) && strlen($data->workid)>0 && isset($data->operate) && strlen($data->operate)>0){
 		//curl提交的参数
 		if(isset($data->pk)){
 			$post_pk = htmlspecialchars(addslashes($data->pk));
@@ -131,25 +173,23 @@
 		}
 		
 
-			$post_userid = userIdKeyDecode(htmlspecialchars(addslashes($data->userid)));
+			$post_userid = htmlspecialchars(userIdKeyDecode(addslashes($data->userid)));
 			$post_token = htmlspecialchars(addslashes($data->token));
 			$post_workid = htmlspecialchars(addslashes($data->workid));
-			$post_sort = htmlspecialchars(addslashes($data->sort));
+			$post_operate = htmlspecialchars(addslashes($data->operate));
 	}else if(
 		isset($_POST['userid']) && strlen($_POST['userid'])>0 &&
 		isset($_POST['token']) && strlen($_POST['token'])>0 &&
 		isset($_POST['workid']) && strlen($_POST['workid'])>0 &&
-		isset($_POST['grade']) && strlen($_POST['grade'])>0 &&
-		isset($_POST['sort']) && strlen($_POST['sort'])>0
+		isset($_POST['operate']) && strlen($_POST['operate'])>0
 		){
 		//获取参数
 		if(isset($_POST['pk']) && strlen($_POST['pk'])>0){$post_pk = htmlspecialchars(addslashes($_POST['pk']));}
 		if(isset($_POST['v'])){$post_v = htmlspecialchars(addslashes($_POST['v']));}
-		$post_userid = userIdKeyDecode(htmlspecialchars(addslashes($_POST['userid'])));
+		$post_userid = htmlspecialchars(userIdKeyDecode(addslashes($_POST['userid'])));
 		$post_token = htmlspecialchars(addslashes($_POST['token']));
 		$post_workid = htmlspecialchars(addslashes($_POST['workid']));
-		$post_grade = htmlspecialchars(addslashes($_POST['grade']));
-		$post_sort = htmlspecialchars(addslashes($_POST['sort']));
+		$post_operate = htmlspecialchars(addslashes($_POST['operate']));
 
 	}else{
 		//缺少参数
@@ -178,7 +218,7 @@
 	//查询用户token是否合法
 	//token 超时时间是3天
 	$okdate = date("Y-m-d H:i:s",strtotime("-3 day"));;
-	$query = 'SELECT * FROM `pcmaker_request_token` WHERE `token`=\''.$post_token.'\' AND `userid`='.$post_userid.' AND `add_time`>\''.$okdate.'\';';
+	$query = 'SELECT * FROM `pcmaker_request_token` WHERE `token`=\''.$post_token.'\' AND `userid`=\''.$post_userid.'\' AND `add_time`>\''.$okdate.'\';';
 	$result = mysqli_query($connection,$query);
 	if($result){
 		if(mysqli_num_rows($result)==0){
@@ -196,28 +236,52 @@
 	}
 	
 	//OK TOKEN 合法
+//查询该userid和workid的配对是否存在
+//查询该workid是否存在
+$query = 'SELECT * FROM `pcmaker_work` WHERE `work_key`=\''.$post_workid.'\';';
+//$json['query'] =$query;
+$result = mysqli_query($connection,$query);
+if($result){
+	if(mysqli_num_rows($result)>0){
+		//找到
+		$work = mysqli_fetch_assoc($result);
+
+		//检查状态是否是已上线作品
+
+		if($work['state'] != 3) {
+			if ($work['user_id'] == $post_userid) {
+				//校验通过可以修改上线状态了
+
+				if($post_operate==1){
+					$operate = 2;
+				}else{
+					$operate = 4;
+				}
+				if($work['state'] != $operate){
+					$query = 'UPDATE `pcmaker_work` SET `state`='.$operate.' WHERE `work_key`=\''.$post_workid.'\';';
+					$res = mysqli_query($connection,$query);
+					if(!$res){
+						//服务器问题
+						$json['status']= 6;
+						$json['usetime'] = endtime($start_time);
+						$json['error'] = 'UpdateError';
+						$json['desc'] = "操作失败,请稍后重试...";
+						$json_code = json_encode($json);
+						echo $json_code;
+						die();
+					}else{
+						$json['workid'] = $post_workid;
+					}
+				}
 
 
-	//已上线
-	if($post_sort==2){
-		//$query ='UPDATE　`pcmaker_work` SET `score`='.$post_grade.'WHERE `work_key`='.$post_workid;
-		$result = mysqli_query($connection,$query);
-
-	}
-
-	//官方收录
-	if($post_sort==3){
-		$cquery = 'SELECT `id` FROM `movie` WHERE `work_key`='.$post_workid;
-		$result = mysqli_query($connection,$query);
-		if($result){
-			if(mysqli_num_rows($result)==0){
-				//没找到
+			} else {
 				//关闭连接
 				if($connection)mysqli_close($connection);
-				$json['status']= 2;
+				$json['status']= 3;
 				$json['usetime'] = endtime($start_time);
-				$json['error'] = 'NoThisWork';
-				$json['desc'] = "无此图解";
+				$json['error'] = 'WorkIdWrongUser';
+				$json['desc'] = '不能操作别人的作品哦';
 				$json_code = json_encode($json);
 				echo $json_code;
 				die();
@@ -225,32 +289,27 @@
 		}else{
 			//关闭连接
 			if($connection)mysqli_close($connection);
-			$json['status']= 2;
+			$json['status']= 5;
 			$json['usetime'] = endtime($start_time);
-			$json['error'] = 'NoThisWork';
-			$json['desc'] = "无此图解";
+			$json['error'] = 'WorkCantModify';
+			$json['desc'] = "作品已收录无法修改";
 			$json_code = json_encode($json);
 			echo $json_code;
 			die();
 		}
-		$movie = mysqli_fetch_assoc($result,$connection);
-		//图解评分类别：1-图解的总得分；2-图的综合得分；3-解的综合得分；4-图片的清晰度；5-截图的筛选和排序；6-图解的选题，原创作品的创新，情节的安排等；7-作者解说的文字功底；8-作者对影片的解读深度
-		$score_type=1;
-		$query ='INSERT INTO　`movie_v_gmscore_record`(`user_id`,`movie_id`,`score_type`,`score_value`,`add_time`) VALUES('.$post_userid.','.$movie['id'].','.$score_type.','.$post_grade.',now())';
-		$result = mysqli_query($connection,$query);
-		if(!$result){
-			$json['status']=3;
-			$json['usetime'] = endtime($start_time);
-			$json['error'] = 'InsertError';
-			$json['desc'] = '评分失败，请稍后再试';
-			$json_code = json_encode($json);
-			echo $json_code;
-			die();
-		}
+	}else{
+		//没找到
+		//关闭连接
+		if($connection)mysqli_close($connection);
+		$json['status']= 4;
+		$json['usetime'] = endtime($start_time);
+		$json['error'] = 'ErrorWorkId';
+		$json['desc'] = "作品校验失败";
+		$json_code = json_encode($json);
+		echo $json_code;
+		die();
 	}
-
-	
-
+}
 	
 	//结束
 	$json['status']= 1;

@@ -24,6 +24,7 @@
 	"CreatWithDb",
 	"CreatWithDbForInput",
 	"GetDbRelatedInfo",
+	  "SearchDbMovie",
 	"CreatWithNew",
 	"CreatWithInput",
 	"ReportPercent",
@@ -36,7 +37,9 @@
 	"CreatScript",
 	"MyWorks",
 	"MyWorksBySort",
-	"Grade"
+	"WorkOperate",
+	"Grade",
+	"ReplayVerifier"
   ],
   "template": {
   	"withCompare": true,

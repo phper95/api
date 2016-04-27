@@ -251,7 +251,7 @@
 				$json['desc'] = "作品已上线无法修改";
 				$json_code = json_encode($json);
 				echo $json_code;
-				die();	
+				die();
 			}
 			
 			//检查该作品是否是该用户名下的作品

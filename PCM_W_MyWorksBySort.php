@@ -152,9 +152,9 @@
 *				"db_name":"双姝怨",
 *				"film_id":"121",
 *				"film_name":"双姝怨",
-*				"creat_time":"2016-03-02 11:15:17",
-*				"submit_time":"2016-03-03 18:22:04",
-*				"update_time":"2016-03-02 11:17:17",
+*				"creat_time":"2016-03-02 11:15",
+*				"submit_time":"2016-03-03 18:22",
+*				"update_time":"2016-03-02 11:17",
 *				"takeon_time":"",
 *				"offline_time":"",
 *				"ck_feedback":"第13,14,15页有露点照片，请注意哦亲！",
@@ -226,6 +226,7 @@
 
 */
 
+
 	//config
 	require_once(dirname(__FILE__).'/'.'inc/interface.json.inc.php');
 	require_once(dirname(__FILE__).'/'.'inc/methods.inc.php');
@@ -242,9 +243,10 @@
 	
 	$json['page_total']= 0;
 	$json['page_now']= 0;
-	$json['page_limit']= 0;
+	$json['page_limit']= 9;
 	$json['works']= array();
-	
+	$json['work_total'] = 0;
+
 	//初始化POST参数
 	$post_pk = 'na';
 	$post_v = 0;
@@ -354,8 +356,6 @@
 	//当前请求的页码和limit
 	$json['page_now']= $post_page;
 	$json['page_limit']= $post_limit;
-	$json['work_total'] = 0;
-	
 	//链接数据库
 	$connection = mysqli_connect(HOST,USER,PSD,DB);
 	if(!$connection){ 
@@ -369,7 +369,8 @@
 		die();
 	}
 	mysqli_query($connection, "SET NAMES 'UTF8'");
-	
+
+
 	//查询用户token是否合法
 	//token 超时时间是3天
 	$okdate = date("Y-m-d H:i:s",strtotime("-3 day"));;
@@ -389,7 +390,9 @@
 			die();
 		}
 	}
-	
+
+
+
 	//按照要求查询作品分页
 	//limt是否合法
 	if($post_page<0 || $post_limit<=0 || $post_limit>30){
@@ -418,7 +421,6 @@
 		}
 		
 		$query = 'SELECT * FROM `pcmaker_work` WHERE `user_id`='.$post_userid.' AND  `state`=1 ORDER BY `update_time` DESC,`creat_time` DESC LIMIT '.$start_index.','.$post_limit.';';
-
 		$json['debug'] = $query;
 	}else if($post_state==2){
 
@@ -474,12 +476,12 @@
 		//查一查总页数
 		$query = 'SELECT * FROM `movie` WHERE `grapher`=\''.$post_userid.'\' AND `ding`>0 AND `open`=1';
 
-		// movie表剧种为vol_count，1-电影；2-电视剧
+		// movie表剧集为vol_count，1-电影；剧集大于1 -电视剧
 		if(isset($post_tv)){
 			if($post_tv==1){
 				$query .=' AND `vol_count`=1';
 			}elseif($post_tv==2){
-				$query .= ' AND `vol_count`=2';
+				$query .= ' AND `vol_count`>1';
 			}
 		}
 		//类型，二级分类，喜剧|恐怖|爱情......
@@ -589,24 +591,59 @@
 
 				//填充信息
 				$json_work = array();
-				$json_work['workid'] = $work['work_key'];
-				$json_work['title'] = $work['title'];
-				$json_work['sub_title'] = $work['sub_title'];
-				$json_work['editor_note'] = $work['editor_note'];
-				$json_work['tv_type'] = $work['tv_type'];
-				$json_work['tv_snum'] = $work['tv_s_num'];
-				$json_work['tv_enum'] = $work['tv_e_num'];
-				$json_work['we_score'] = $work['we_score'];
-				$json_work['author'] = $work['author'];
-				$json_work['actor'] = $work['actor'];
-				$json_work['intro'] = $work['intro'];
-				$json_work['showtime'] = $work['showtime'];
-				$json_work['zone'] = $work['zone'];
-				$json_work['score'] = $work['score'];
-
-				$json_work['bpic_id'] = $work['bpic_id'];
-				$json_work['bpic_md5'] = $work['bpic_md5'];
+				$json_work['workid'] = is_null($work['work_key'])?'':$work['work_key'];
+				$json_work['title'] = is_null($work['title'])?'':$work['title'];
+				$json_work['sub_title'] = is_null($work['sub_title'])?'':$work['sub_title'];
+				$json_work['editor_note'] = is_null($work['editor_note'])?'':$work['editor_note'];
+				$json_work['tv_type'] = is_null($work['tv_type'])?'':$work['tv_type'];
+				$json_work['tv_snum'] = is_null($work['tv_s_num'])?'':$work['tv_s_num'];
+				$json_work['tv_enum'] = is_null($work['tv_e_num'])?'':$work['tv_e_num'];
+				$json_work['we_score'] = is_null($work['we_score'])?'':$work['we_score'];
+				$json_work['author'] = is_null($work['author'])?'':$work['author'];
+				$json_work['actor'] = is_null($work['actor'])?'':$work['actor'];
+				$json_work['intro'] = is_null($work['intro'])?'':$work['intro'];
+				$json_work['showtime'] = is_null($work['showtime'])?'':$work['showtime'];
+				$json_work['zone'] = is_null($work['zone'])?'':$work['zone'];
+				$json_work['score'] = is_null($work['score'])?'':$work['score'];
+				$json_work['bpic_id'] = is_null($work['bpic_id'])?'':$work['bpic_id'];
+				$json_work['bpic_md5'] = is_null($work['bpic_md5'])?'':$work['bpic_md5'];
 				$json_work['bpic_url'] = '';
+				$json_work['movie_comment']='';
+				$json_work['bpic_id']='';
+				$json_work['bpic_md5']='';
+				$json_work['spic_id']='';
+				$json_work['spic_md5']='';
+				$json_work['firstpage_id']='';
+				$json_work['firstpage_md5']='';
+				$json_work['firstpage_url']='';
+				$json_work['tags']='';
+				$json_work['act_id']='';
+				$json_work['act_name']='';
+				$json_work['page_count']=0;
+				$json_work['size']='';
+				$json_work['state']='';
+				$json_work['movie_id']='';
+				$json_work['movie_played']='';
+				$json_work['movie_poptxt']='';
+				$json_work['movie_like']='';
+				$json_work['movie_gold']='';
+				$json_work['movie_keep']='';
+				$json_work['movie_share']='';
+				$json_work['movie_score']='';
+				$json_work['movie_lv']='';
+				$json_work['movie_url']='http://www.graphmovie.com';
+				$json_work['progress']=0;
+				$json_work['db_name']='';
+				$json_work['film_id']='';
+				$json_work['film_name']='';
+				$json_work['creat_time']='';
+				$json_work['submit_time']='';
+				$json_work['update_time']='';
+				$json_work['takeon_time']='';
+				$json_work['offline_time']='';
+				$json_work['ck_feedback']='';
+				$json_work['fb_repay_id']='';
+
 				//查询出封面存储地址
 				if(strlen($work['bpic_id'])>0 && $work['bpic_id']>0){
 					$query = 'SELECT * FROM `pcmaker_work_img` WHERE `id`='.$work['bpic_id'].';';
@@ -617,8 +654,8 @@
 					}
 				}
 				
-				$json_work['spic_id'] = $work['spic_id'];
-				$json_work['spic_md5'] = $work['spic_md5'];
+				$json_work['spic_id'] = is_null($work['spic_id'])?'':$work['spic_id'];
+				$json_work['spic_md5'] = is_null($work['spic_md5'])?'':$work['spic_md5'];
 				$json_work['spic_url'] = '';
 				//查询出封面存储地址
 				if(strlen($work['spic_id'])>0 && $work['spic_id']>0){
@@ -630,9 +667,10 @@
 					}
 				}
 				
-				$json_work['firstpage_id'] = $work['firstpage_id'];
-				$json_work['firstpage_md5'] = $work['firstpage_md5'];
+				$json_work['firstpage_id'] = is_null($work['firstpage_id'])?'':$work['firstpage_id'];
+				$json_work['firstpage_md5'] = is_null($work['firstpage_md5'])?'':$work['firstpage_md5'];
 				$json_work['firstpage_url'] = '';
+
 				//查询出封面存储地址
 				if(strlen($work['firstpage_id'])>0 && $work['firstpage_id']>0){
 					$query = 'SELECT * FROM `pcmaker_work_img` WHERE `id`='.$work['firstpage_id'].';';
@@ -643,10 +681,10 @@
 					}
 				}
 				
-				$json_work['tags'] = $work['tags'];
-				$json_work['tags_text'] = $work['tags_text'];
-				$json_work['season_id'] = $work['season_id'];
-				$json_work['act_id'] = $work['act_id'];
+				$json_work['tags'] = is_null($work['tags'])?'':$work['tags'];
+				$json_work['tags_text'] = is_null($work['tags_text'])?'':$work['tags_text'];
+				$json_work['season_id'] = is_null($work['season_id'])?'':$work['season_id'];
+				$json_work['act_id'] = is_null($work['act_id'])?'':$work['act_id'];
 				
 				//查询活动
 				$json_work['act_name'] = '';
@@ -655,15 +693,15 @@
 					$act_result = mysqli_query($connection,$query);
 					if($act_result && mysqli_num_rows($act_result)>0){
 						$act_record = mysqli_fetch_assoc($act_result);	
-						$json_work['act_name'] = $act_record['name'];
+						$json_work['act_name'] = is_null($act_record['name'])?'':$act_record['name'];
 					}
 				}
 				
-				$json_work['page_count'] = $work['page_count'];
-				$json_work['size'] = $work['size'];
-				$json_work['state'] = $work['state'];
+				$json_work['page_count'] = is_null($work['page_count'])?'':$work['page_count'];
+				$json_work['size'] = is_null($work['size'])?'':$work['size'];
+				$json_work['state'] = is_null($work['state'])?'':$work['state'];
 				
-				$json_work['movie_id'] = $work['movie_id'];
+				$json_work['movie_id'] = is_null($work['movie_id'])?'':$work['movie_id'];
 				$json_work['movie_played'] = '0';
 				$json_work['movie_poptxt'] = '0';
 				$json_work['movie_like'] = '0';
@@ -671,22 +709,24 @@
 				$json_work['movie_score'] = '0';
 				$json_work['movie_lv'] = '0';
 				$json_work['movie_url'] = 'http://www.graphmovie.com';
-				
 				//查询movie
 				if(strlen($work['movie_id'])>0 && $work['movie_id']>0){
+
 					$query = 'SELECT * FROM `movie` WHERE `id`='.$work['movie_id'].';';
 					$mv_result = mysqli_query($connection,$query);
+
 					if($mv_result && mysqli_num_rows($mv_result)>0){
 						$mv_record = mysqli_fetch_assoc($mv_result);	
 						$json_work['movie_played'] = (string)number_2_numberFont($mv_record['played']);
 						$json_work['movie_poptxt'] = (string)number_2_numberFont($mv_record['poptxt_count']);
 						$json_work['movie_like'] = (string)number_2_numberFont($mv_record['ding']);
-						$json_work['movie_comment'] = (string)number_2_numberFont($mv_record['comments']);
+						$json_work['movie_comment'] = (string)number_2_numberFont($mv_record['comment_count']);
 						$json_work['movie_keep'] = (string)number_2_numberFont($mv_record['keep']);
 						$json_work['movie_share'] = (string)number_2_numberFont($mv_record['share']);
-						$json_work['movie_lv'] = $mv_record['cellcover'];
+						$json_work['movie_lv'] = is_null($mv_record['cellcover'])?'':$mv_record['cellcover'];
+						$json_work['movie_url'] = 'http://www.graphmovie.com/ereader/r.php?k='.movieIdOnlineKeyEncode($mv_result['id']);
 					}
-					
+
 					//打赏的金币
 					$query = 'SELECT * FROM `reward_map` '.
 								' WHERE '. 
@@ -696,47 +736,49 @@
 					$result_reward = mysqli_query($connection,$query);
 					if($result_reward && mysqli_num_rows($result_reward)>0){
 						$reward_record = mysqli_fetch_assoc($result_reward);
-						$json_work['movie_gold'] = $reward_record['total_gold'];
+						$json_work['movie_gold'] = is_null($reward_record['total_gold'])?'':$reward_record['total_gold'];
 					}
-					
+
 					//图解的评分
 					$json_work['movie_score'] = '0';
 					$query = 'SELECT * FROM `movie_v_gmscore` WHERE `movie_id`='.$work['movie_id'].' AND `score_type`=1;';
 					$score_result = mysqli_query($connection,$query);
 					if($score_result && mysqli_num_rows($score_result)>0){
 						$score_record = mysqli_fetch_assoc($score_result);	
-						$json_work['movie_score'] = $score_record['score_value'];
+						$json_work['movie_score'] = is_null($score_record['score_value'])?'':$score_record['score_value'];
 					}
-					
-					
+
+
 					//图解分享的地址
 					$json_work['movie_url'] = 'http://www.graphmovie.com/ereader/r.php?k='.movieIdOnlineKeyEncode($work['movie_id']);
 					
 				}
+
+				$json_work['progress'] = is_null($work['progress'])?'':$work['progress'];
 				
-				$json_work['progress'] = $work['progress'];
+				$json_work['db_url'] = is_null($work['db_url'])?'':$work['db_url'];
 				
-				$json_work['db_url'] = $work['db_url'];
-				
-				$json_work['db_id'] = $work['db_id'];
+				$json_work['db_id'] = is_null($work['db_id'])?'':$work['db_id'];
 				//豆瓣名称
 				if(strlen($work['db_id'])>0 && $work['db_id']>0){
 					$json_work['db_name'] = '';
 					//mdb_douban_mvmsg
 					$query = 'SELECT * FROM `mdb_douban_mvmsg` WHERE `douban_id`='.$work['db_id'].';';
 					$db_result = mysqli_query($connection,$query);
+
 					if($db_result && mysqli_num_rows($db_result)>0){
 						$db_record = mysqli_fetch_assoc($db_result);
-						$db_msg = @json_decode($db_record['json']);	
+						$db_msg = @json_decode($db_record['json']);
 						if(count($db_msg)>0){
-							$json_work['db_name'] = $db_msg['title'];
+							$json_work['db_name'] = is_null($db_msg->title) ? '' : $db_msg->title;
+
 						}	
 					}
 				}
-				
-				
-				$json_work['film_id'] = $work['film_id'];
+
+				$json_work['film_id'] = is_null($work['film_id'])?'':$work['film_id'];
 				//film名称
+
 				if(strlen($work['film_id'])>0 && $work['film_id']>0){
 					$json_work['film_name'] = '';
 					//mdb_film
@@ -744,17 +786,18 @@
 					$db_result = mysqli_query($connection,$query);
 					if($db_result && mysqli_num_rows($db_result)>0){
 						$db_record = mysqli_fetch_assoc($db_result);
-						$json_work['film_name'] = $db_record['name'];	
+						$json_work['film_name'] = is_null($db_record['name'])?'':$db_record['name'];
 					}
 				}
+
 				
 				//时间
-				$json_work['creat_time'] = $work['creat_time'];		//作品创建时间
-				$json_work['submit_time'] = $work['submit_time'];	//作品提交时间
-				$json_work['update_time'] = $work['update_time'];	//作品变更时间
-				$json_work['takeon_time'] = $work['takeon_time'];	//作品收录时间
-				$json_work['offline_time'] = $work['offline_time'];	//作品下线时间
-				
+				$json_work['creat_time'] = date('Y-m-d H:i',$work['creat_time']);		//作品创建时间
+				$json_work['submit_time'] = date('Y-m-d H:i',$work['submit_time']);	//作品提交时间
+				$json_work['update_time'] = date('Y-m-d H:i',$work['update_time']);	//作品变更时间
+				$json_work['takeon_time'] = date('Y-m-d H:i',$work['takeon_time']);	//作品收录时间
+				$json_work['offline_time'] = date('Y-m-d H:i',$work['offline_time']);//作品下线时间
+
 				//评审意见
 				$json_work['ck_feedback'] = '';
 				$json_work['fb_repay_id'] = '';
@@ -765,12 +808,12 @@
 					if($ck_result && mysqli_num_rows($ck_result)>0){
 						$ck_record = mysqli_fetch_assoc($ck_result);
 						$json_work['ck_feedback'] = $ck_record['content'];
-						$json_work['fb_repay_id'] = $ck_record['id'];	
+						$json_work['fb_repay_id'] = $ck_record['id'];
 					}
 				}
 				
 				//存储json_work
-				$json['works'][count($json['works'])] = $json_work;
+				$json['works'][count($json['works'])] = is_null($json_work)?'':$json_work;
 				
 				$i++;
 				
@@ -795,12 +838,12 @@
 		//$query = 'SELECT * FROM `movie` WHERE `grapher`=\''.$post_userid.'\' AND `open`=1 AND `ding`>0 ORDER BY `id` DESC LIMIT '.$start_index.','.$post_limit.';';
 		$query = 'SELECT * FROM `movie` WHERE `grapher`=\''.$post_userid.'\' AND `open`=1 AND `ding`>0';
 
-		// movie表剧种为vol_count，1-电影；2-电视剧
+		// movie表剧集为vol_count，1-电影；>1-电视剧
 		if(isset($post_tv)){
 			if($post_tv==1){
 				$query .=' AND `vol_count`=1';
 			}elseif($post_tv==2){
-				$query .= ' AND `vol_count`=2';
+				$query .= ' AND `vol_count`>1';
 			}
 		}
 
@@ -839,10 +882,45 @@
 				
 				//填充信息
 				$json_work = array();
+				$json_work['movie_comment']='';
+				$json_work['bpic_id']='';
+				$json_work['bpic_md5']='';
+				$json_work['bpic_url']='';
+				$json_work['spic_id']='';
+				$json_work['spic_md5']='';
+				$json_work['firstpage_id']='';
+				$json_work['firstpage_md5']='';
+				$json_work['firstpage_url']='';
+				$json_work['tags']='';
+				$json_work['act_id']='';
+				$json_work['act_name']='';
+				$json_work['page_count']=0;
+				$json_work['size']='';
+				$json_work['state']=3;
+				$json_work['movie_id']='';
+				$json_work['movie_played']='';
+				$json_work['movie_poptxt']='';
+				$json_work['movie_like']='';
+				$json_work['movie_gold']='';
+				$json_work['movie_keep']='';
+				$json_work['movie_share']='';
+				$json_work['movie_score']='';
+				$json_work['movie_lv']='';
+				$json_work['movie_url']='http://www.graphmovie.com';
+				$json_work['progress'] = 100;
+				$json_work['film_id']='';
+				$json_work['film_name']='';
+				$json_work['creat_time']='';
+				$json_work['submit_time']='';
+				$json_work['update_time']='';
+				$json_work['takeon_time']='';
+				$json_work['ck_feedback']='';
+				$json_work['fb_repay_id']='';
+
 				$json_work['workid'] = md5('movieid:'.$movie['id']);
-				$json_work['title'] = $movie['name'];
-				$json_work['sub_title'] = $movie['sub_title'];
-				$json_work['editor_note'] = $movie['editor_note'];
+				$json_work['title'] = is_null($movie['name'])?'':$movie['name'];
+				$json_work['sub_title'] = is_null($movie['sub_title'])?'':$movie['sub_title'];
+				$json_work['editor_note'] = is_null($movie['editor_note'])?'':$movie['editor_note'];
 				
 				$json_work['tv_type'] = $movie['vol_count']>1?2:0;
 				$json_work['tv_snum'] = 0;
@@ -860,46 +938,41 @@
 					$json_work['we_score'] = 0;	
 				}
 				
-				$json_work['author'] = $movie['author'];
-				$json_work['actor'] = $movie['actor'];
-				$json_work['intro'] = $movie['intro'];
-				$json_work['showtime'] = $movie['showtime'];
-				$json_work['zone'] = $movie['zone'];
-				$json_work['score'] = $movie['score'];
+				$json_work['author'] = is_null($movie['author'])?'':$movie['author'];
+				$json_work['actor'] = is_null($movie['actor'])?'':$movie['actor'];
+				$json_work['intro'] = is_null($movie['intro'])?'':$movie['intro'];
+				$json_work['showtime'] = is_null($movie['showtime'])?'':$movie['showtime'];
+				$json_work['zone'] = is_null($movie['zone'])?'':$movie['zone'];
+				$json_work['score'] = is_null($movie['score'])?'':$movie['score'];
 				
 				$json_work['bpic_id'] = '';
 				$json_work['bpic_md5'] = '';
 				$json_work['bpic_url'] = 'http://avatar.graphmovie.com/boo/'.$movie['bpic'];
 				
-				$json_work['spic_id'] = '';
-				$json_work['spic_md5'] = '';
 				$json_work['spic_url'] = 'http://avatar.graphmovie.com/boo/'.$movie['spic'];
 				
-				$json_work['firstpage_id'] = '';
-				$json_work['firstpage_md5'] = '';
-				$json_work['firstpage_url'] = '';
-				
+
 				$json_work['tags'] = $movie['tags'];
-				$json_work['tags_text'] = $movie['tags_text'];
-				$json_work['season_id'] = $movie['season_id'];
+				$json_work['tags_text'] = is_null($movie['tags_text'])?'':$movie['tags_text'];
+				$json_work['season_id'] = is_null($movie['season_id'])?'':$movie['season_id'];
 				
-				$json_work['act_id'] = '';
-				
+
 				//查询活动
-				$json_work['act_name'] = '';
-				
+
 				$json_work['page_count'] = $movie['total_page'];
 				$json_work['size'] = $movie['total_size'];
-				$json_work['state'] = 3;
-				
+
 				$json_work['movie_id'] = $movie['id'];
 				$json_work['movie_played'] = (string)number_2_numberFont($movie['played']);
 				$json_work['movie_poptxt'] = (string)number_2_numberFont($movie['poptxt_count']);
 				$json_work['movie_like'] = (string)number_2_numberFont($movie['ding']);
-				$json_work['movie_comment'] = (string)number_2_numberFont($movie['comments']);
+				$json_work['movie_comment'] = (string)number_2_numberFont($movie['comment_count']);
 				$json_work['movie_keep'] = (string)number_2_numberFont($movie['keep']);
 				$json_work['movie_share'] = (string)number_2_numberFont($movie['share']);
-				$json_work['movie_lv'] = $movie['cellcover'];
+				$json_work['movie_lv'] = is_null($movie['cellcover'])?'':$movie['cellcover'];
+
+
+
 				
 				$query = 'SELECT * FROM `reward_map` '.
 							' WHERE '. 
@@ -909,7 +982,7 @@
 				$result_reward = mysqli_query($connection,$query);
 				if($result_reward && mysqli_num_rows($result_reward)>0){
 					$reward_record = mysqli_fetch_assoc($result_reward);
-					$json_work['movie_gold'] = $reward_record['total_gold'];
+					$json_work['movie_gold'] = is_null($reward_record['total_gold'])?'':$reward_record['total_gold'];
 				}
 				
 				//图解的评分
@@ -918,7 +991,7 @@
 				$score_result = mysqli_query($connection,$query);
 				if($score_result && mysqli_num_rows($score_result)>0){
 					$score_record = mysqli_fetch_assoc($score_result);	
-					$json_work['movie_score'] = $score_record['score_value'];
+					$json_work['movie_score'] = is_null($score_record['score_value'])?'':$score_record['score_value'];
 				}
 				
 				
@@ -926,7 +999,7 @@
 				$json_work['movie_url'] = 'http://www.graphmovie.com/ereader/r.php?k='.movieIdOnlineKeyEncode($movie['id']);
 				
 				
-				$json_work['progress'] = 100;
+
 				
 				
 				$json_work['db_url'] = '';
@@ -935,14 +1008,14 @@
 				$db_result = mysqli_query($connection,$query);
 				if($db_result && mysqli_num_rows($db_result)>0){
 					$db_record = mysqli_fetch_assoc($db_result);
-					$json_work['db_url'] = $db_record['link_url'];
+					$json_work['db_url'] = is_null($db_record['link_url'])?'':$db_record['link_url'];
 				}
 				
 				$json_work['db_id'] = '';
 				$cut_a = explode('subject/',$json_work['db_url']);
 				if(count($cut_a)>1){
 					$cut_b = explode('/',$cut_a[1]);
-					$json_work['db_id'] = $cut_b[0];
+					$json_work['db_id'] = is_null($cut_b[0])?'':$cut_b[0];
 				}
 				
 				//豆瓣名称
@@ -953,9 +1026,9 @@
 					$db_result = mysqli_query($connection,$query);
 					if($db_result && mysqli_num_rows($db_result)>0){
 						$db_record = mysqli_fetch_assoc($db_result);
-						$db_msg = @json_decode($db_record['json']);	
+						$db_msg = @json_decode($db_record['json']);
 						if(count($db_msg)>0){
-							$json_work['db_name'] = $db_msg['title'];
+							$json_work['db_name'] = is_null($db_msg->title)?'':$db_msg->title;
 						}	
 					}
 				}
@@ -968,7 +1041,7 @@
 				$json_work['creat_time'] = '';		//作品创建时间
 				$json_work['submit_time'] = '';	//作品提交时间
 				$json_work['update_time'] = '';	//作品变更时间
-				$json_work['takeon_time'] = $movie['add_time'];	//作品收录时间
+				$json_work['takeon_time'] = date('Y-m-d H:i',$movie['add_time']);	//作品收录时间
 				$json_work['offline_time'] = '';	//作品下线时间
 				
 				//评审意见
@@ -976,7 +1049,7 @@
 				$json_work['fb_repay_id'] = '';
 				
 				//存储json_work
-				$json['works'][count($json['works'])] = $json_work;
+				$json['works'][count($json['works'])] = is_null($json_work)?'':$json_work;
 				
 				$i++;
 				

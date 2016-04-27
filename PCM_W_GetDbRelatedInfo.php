@@ -7,7 +7,7 @@
 * @apiGroup Work
 * @apiSampleRequest http://ser3.graphmovie.com/gmspanel/interface/zh-cn/3.1/PCM_W_GetDbRelatedInfo.php
 
-* @apiDescription 用户输入一个豆瓣电影URL点击关联后,请求此接口来生成作品ID
+* @apiDescription 通过豆瓣电影URL获取相关作品的信息
 
 * @apiParam (POST) {String} [pk=""] 用户PC的机器码(MAC地址)
 * @apiParam (POST) {Integer} [v=0] 用户GraphMovieStudios的内部版本号
@@ -25,22 +25,23 @@
 * @apiSuccess (ResponseJSON) {Integer} ingcount 当前正在制作这部作品的其他作者有几个.
 * @apiSuccess (ResponseJSON) {Integer} okcount 当前已经上线的这部影片的图解有几部.
 * @apiSuccess (ResponseJSON) {Integer} weicount 当前已经上线的这部影片的微图解有几部（目前没有统计微图解的数量，暂时返回0）.
-* @apiSuccess (ResponseJSON) {Array[]} msg_ing 信息的结构体，在JSON中是不存在此key的，这里只是为了说明，具体可参见下面Success-Response中的示例.
-* @apiSuccess (ResponseJSON) {String} msg_ing.ingid 记录ID，保证各个msg结构此键值不同，客户端使用.
-* @apiSuccess (ResponseJSON) {String} msg_ing.userid 作者信息中的用户ID.
-* @apiSuccess (ResponseJSON) {String} msg_ing.nickname 作者信息中的昵称.
-* @apiSuccess (ResponseJSON) {String} msg_ing.avatar 作者信息中的头像URL.
-* @apiSuccess (ResponseJSON) {String} msg_ing.update_time 作者最后制作该图解的时间,如"9小时前".
-* @apiSuccess (ResponseJSON) {Integer} msg_ing.percent 作者已经完成的进度[0-100],如40,65,99.
-* @apiSuccess (ResponseJSON) {Array[]} msg_ok 信息的结构体，在JSON中是不存在此key的，这里只是为了说明，具体可参见下面Success-Response中的示例.
-* @apiSuccess (ResponseJSON) {String} msg_ok.okid 记录ID，保证各个msg结构此键值不同，客户端使用.
-* @apiSuccess (ResponseJSON) {String} msg_ok.userid 作者信息中的用户ID.
-* @apiSuccess (ResponseJSON) {String} msg_ok.nickname 作者信息中的昵称.
-* @apiSuccess (ResponseJSON) {String} msg_ok.avatar 作者信息中的头像URL.
-* @apiSuccess (ResponseJSON) {Integer} msg_ok.workname 作者已上线作品的名称.
-* @apiSuccess (ResponseJSON) {Integer} msg_ok.worksubname 作者已上线作品的副标题.
-* @apiSuccess (ResponseJSON) {Integer} msg_ok.workscore 作者已上线作品的分数.
-* @apiSuccess (ResponseJSON) {Integer} msg_ok.workscorenum 作者已上线作品参与评分的人数.
+* @apiSuccess (ResponseJSON) {Integer} waitingcount 当前作品期待人数（目前没有此功能，返回10000-100000之间的随机数）.
+* @apiSuccess (ResponseJSON) {Array[]} ingmsg 信息的结构体，在JSON中是不存在此key的，这里只是为了说明，具体可参见下面Success-Response中的示例.
+* @apiSuccess (ResponseJSON) {String} ingmsg.ingid 记录ID，保证各个msg结构此键值不同，客户端使用.
+* @apiSuccess (ResponseJSON) {String} ingmsg.userid 作者信息中的用户ID.
+* @apiSuccess (ResponseJSON) {String} ingmsg.nickname 作者信息中的昵称.
+* @apiSuccess (ResponseJSON) {String} ingmsg.avatar 作者信息中的头像URL.
+* @apiSuccess (ResponseJSON) {String} ingmsg.update_time 作者最后制作该图解的时间,如"9小时前".
+* @apiSuccess (ResponseJSON) {Integer} ingmsg.percent 作者已经完成的进度[0-100],如40,65,99.
+* @apiSuccess (ResponseJSON) {Array[]} okmsg 信息的结构体，在JSON中是不存在此key的，这里只是为了说明，具体可参见下面Success-Response中的示例.
+* @apiSuccess (ResponseJSON) {String} okmsg.okid 记录ID，保证各个msg结构此键值不同，客户端使用.
+* @apiSuccess (ResponseJSON) {String} okmsg.userid 作者信息中的用户ID.
+* @apiSuccess (ResponseJSON) {String} okmsg.nickname 作者信息中的昵称.
+* @apiSuccess (ResponseJSON) {String} okmsg.avatar 作者信息中的头像URL.
+* @apiSuccess (ResponseJSON) {Integer} okmsg.workname 作者已上线作品的名称.
+* @apiSuccess (ResponseJSON) {Integer} okmsg.worksubname 作者已上线作品的副标题.
+* @apiSuccess (ResponseJSON) {Integer} okmsg.workscore 作者已上线作品的分数.
+* @apiSuccess (ResponseJSON) {Integer} okmsg.workscorenum 作者已上线作品参与评分的人数.
 * @apiSuccess (ResponseJSON) {String} first_finished_reword 首个完成被官方收录的作品可获得的金币数.
 
 *
@@ -173,7 +174,6 @@
 	//获取JSON基本模板
 	$json = getBasicJsonModel();
 	$json["desc"] = "";
-	$json["dbmsg"] = "";
 	$json["query"] = "";
 
 	//20160304 内测结束 
@@ -276,7 +276,31 @@
 			die();
 		}
 	}
-	
+
+
+//初始化返回结果（c#不接受null）
+$json['dbmsg']='';
+$db_info = array();
+$db_info['name'] = '';
+$db_info['rating'] ='';
+$db_info['directors'] ='';
+$db_info['actors'] = '';
+$db_info['tags'] = '';
+$db_info['region'] = '';
+$db_info['pubday'] = '';
+
+$json['ingcount']='';
+$json['okcount']=0;
+$json['weicount']=0;
+$json['waitingcount']=0;
+
+$ingmsg = array();
+$json['ingmsg']='';
+
+
+
+$json['okmsg']='';
+
 	//OK TOKEN 合法
 	//检测豆瓣URL是否合法
 	//是否是豆瓣subject链接
@@ -286,6 +310,8 @@
 	//书本ID的格式:http://book.douban.com/subject/10734267/
 	//豆瓣各个实体的ID不重复
 	//
+
+
 	
 	$subject_rest = '';
 	$subject_id = '';
@@ -389,7 +415,7 @@ if($_SERVER['HTTP_HOST']=='localhost'){
 
 
 $json_struct = @json_decode($response_json);
-$db_info = array();
+
 if($json_struct && isset($json_struct->status)){
 	if($json_struct->status==1){
 		$db_info['name'] = $json_struct->dbmsg->title;
@@ -443,7 +469,6 @@ if($json_struct && isset($json_struct->status)){
 	$res_ingcount = 0;
 	$poptitle = '当前没有人在图解此影片哟！';
 	$popdesc = '';
-	$ingmsg = array();
 	$query = 'SELECT *, count(distinct `user_id`) FROM `pcmaker_work` WHERE `db_id`=\''.$subject_id.'\' AND `state`=1 GROUP BY `user_id`;';
 	//只需取五条且user_id不同
 	$query1 = 'SELECT *,count(distinct `user_id`) FROM `pcmaker_work` WHERE `db_id`=\''.$subject_id.'\' AND `state`=1 GROUP BY `user_id` LIMIT 5;';
@@ -458,7 +483,7 @@ if($json_struct && isset($json_struct->status)){
 
 	//查五条数据
 	$result1 = mysqli_query($connection,$query1);
-	$ingmsg = array();
+
 	if($result1){
 		if(mysqli_num_rows($result1)>0){
 			$i=0;
@@ -472,12 +497,12 @@ if($json_struct && isset($json_struct->status)){
 					$user = mysqli_fetch_assoc($user_result);
 
 					$msg = array(
-						"ingid" => $record['work_key'],
-						"userid" => (string)userIdKeyEncode($user['id']),
-						"nickname" => (string)$user['name'],
+						"ingid" => is_null($record['work_key']) ? '' : $record['work_key'],
+						"userid" => is_null((string)userIdKeyEncode($user['id'])) ? '' : (string)userIdKeyEncode($user['id']),
+						"nickname" => is_null((string)$user['name']) ? '' : (string)$user['name'],
 						"avatar" => $user['avatar']?$user['avatar']:'http://imgs4.graphmovie.com/appimage/app_default_avatar.jpg',
 						"update_time" => (string)getDateStyle(strtotime($record['update_time'])),
-						"percent" => $record['progress']
+						"percent" => is_null($record['progress']) ? '' : $record['progress']
 					);
 					$ingmsg[] = $msg;
 				}
@@ -520,22 +545,28 @@ if($json_struct && isset($json_struct->status)){
 					$user_result = mysqli_query($connection,$query);
 
 					//查评分人数（movie_v_gmscore_record）
-					$score_query = 'SELECT * FROM `movie_v_gmscore_record` WHERE `movie_id`='.$record['movie_id'].';';
+					$score_query = 'SELECT * FROM `movie_v_gmscore_record` WHERE `movie_id`='.$record['movie_id'].' AND `score_type`=1;';
 					$score_result = mysqli_query($connection,$query);
 					$score_num = mysqli_num_rows($score_result);
+					$score = mysqli_fetch_assoc($score_result);
+					if($score_num){
+						$gmscore = $score['score_value'];
+					}else{
+						$gmscore = 0;
+					}
 
 					if($user_result && mysqli_num_rows($user_result)>0){
 						$user = mysqli_fetch_assoc($user_result);
 						
 						$msg = array(
-							"okid" => md5(userIdKeyEncode($record['movie_id'])),
-							"userid" => (string)userIdKeyEncode($user['id']),
-							"nickname" => (string)$user['name'],
-							"avatar" => $user['avatar']?$user['avatar']:'http://imgs4.graphmovie.com/appimage/app_default_avatar.jpg',
-							"workname" => $movie['name'],
-							"worksubname" => $movie['sub_title'],
-							"workscore" => $movie['score'],
-							"workscorenum" => (string)number_2_numberFont($score_num),
+							"okid" => is_null(md5(userIdKeyEncode($record['movie_id']))) ? '': md5(userIdKeyEncode($record['movie_id'])),
+							"userid" => is_null((string)userIdKeyEncode($user['id'])) ? '': (string)userIdKeyEncode($user['id']),
+							"nickname" => is_null((string)$user['name']) ? '': (string)$user['name'],
+							"avatar" => $user['avatar']?$user['avatar']: 'http://imgs4.graphmovie.com/appimage/app_default_avatar.jpg',
+							"workname" => is_null($movie['name']) ? '': $movie['name'],
+							"worksubname" => is_null($movie['sub_title']) ? '' : $movie['sub_title'],
+							"workscore" => is_null($gmscore) ? : $gmscore,
+							"workscorenum" => is_null((string)number_2_numberFont($score_num)) ? '' : (string)number_2_numberFont($score_num),
 							//"played" => (string)number_2_numberFont($movie['played']),
 							//"like" => (string)number_2_numberFont($movie['ding'])
 						);
@@ -561,6 +592,7 @@ if($json_struct && isset($json_struct->status)){
 	$json['ingcount'] = $ingcount;
 	$json['okcount'] = $okcount;
 	$json['weicount'] = $weicount;
+	$json['waitingcount'] = rand(10000,100000);
 	//$json['poptitle'] = $poptitle;
 	//$json['popdesc'] = $popdesc;
 	$json['ingmsg'] = $ingmsg;

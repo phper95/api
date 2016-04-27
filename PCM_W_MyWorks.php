@@ -368,7 +368,7 @@
 		die();
 	}
 	mysqli_query($connection, "SET NAMES 'UTF8'");
-	
+
 	//查询用户token是否合法
 	//token 超时时间是3天
 	$okdate = date("Y-m-d H:i:s",strtotime("-3 day"));;
