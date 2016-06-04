@@ -1,7 +1,7 @@
 <?php
 /**
 * @api {post} /gmspanel/interface/zh-cn/3.1/PCM_W_ReplayVerifier.php 回复审核者下线原因
-* @apiPermission pxseven
+* @apiPermission yongge
 * @apiVersion 0.1.0
 * @apiName ReplayVerifier
 * @apiGroup Work
@@ -254,7 +254,7 @@ if($result){
 		$work = mysqli_fetch_assoc($result);
 			if ($work['user_id'] == $post_userid) {
 				//校验通过可以回复了
-					$query = 'INSERT INTO `pcmaker_cker_msg`(`work_id`,`sender_user_id`,`to_user_id`,`content`,`add_time`) VALUES(\''.$post_workid.'\',\''.$post_userid.'\',\''.$post_verifierid.'\',\''.$post_msg.'\',now());';
+					$query = 'INSERT INTO `pcmaker_cker_msg`(`work_id`,`sender_user_id`,`to_user_id`,`content`,`add_time`) VALUES(\''.$work['id'].'\',\''.$post_userid.'\',\''.$post_verifierid.'\',\''.$post_msg.'\',now());';
 					$json['query'] =$query;
 					$res = mysqli_query($connection,$query);
 					if(!$res){

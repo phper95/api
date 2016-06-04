@@ -385,7 +385,7 @@
 			$need_creat_new_workkey = true;	
 		}
 	}
-	
+	//var_dump($need_creat_new_workkey);
 	//如果需要生成新的workid就post到接口PCM_W_CreatWithDb 或 PCM_W_CreatWithNew 生成新的id
 	if($need_creat_new_workkey){
 		$is_newwork = false; 
@@ -445,13 +445,13 @@
 					/*------------------------------------------------------------------------------------------------------------------*/
 					/*------------------------------------------------------------------------------------------------------------------*/
 					/*------------------------------------------------------------------------------------------------------------------*/
-					$json['status']= 2;
+					/*$json['status']= 2;
 					$json['usetime'] = endtime($start_time);
 					$json['error'] = 'TESTEND';
 					$json['desc'] = '本轮内测结束，谢谢大家的踊跃参与！未完成的上传作品请导出，使用旧版本制作器导入打包后再邮箱投稿哈~';
 					$json_code = json_encode($json);
 					echo $json_code;
-					die();
+					die();*/
 					/*------------------------------------------------------------------------------------------------------------------*/
 					/*------------------------------------------------------------------------------------------------------------------*/
 					/*------------------------------------------------------------------------------------------------------------------*/
@@ -605,7 +605,7 @@
 		$query = "UPDATE `pcmaker_work` SET `title`='".$post_movie_name."',`sub_title`='".$post_subtitle."',`editor_note`='".$post_movie_bza."',`author`='".$post_movie_direct."',`actor`='".$post_movie_actor."',`intro`='".$post_movie_intro."',`showtime`='".$post_movie_time."',`zone`='".$post_movie_countory."',`tags`='".$post_movie_type."',`tags_text`='',`save_path`='".$post_workid.'/'.$post_uploadkey."',`bpic_md5`='".$post_bpic_md5."',`spic_md5`='".$post_spic_md5."',`firstpage_md5`='".$post_fpic_md5."',`tv_type`=".$post_movie_istv.",`page_count`=".$post_movie_imgcount." WHERE `work_key`='".$post_workid."';";
 		
 		//这里只更新非空字符串
-		$query = "UPDATE `pcmaker_work` SET `save_path`='".$post_workid.'/'.$post_uploadkey."',`tags_text`='' ";
+		$query = "UPDATE `pcmaker_work` SET `save_path`='".$post_workid.'/'.$post_uploadkey."',`tags_text`='',`update_time`=now() ";
 		
 		if(strlen($post_movie_name)>0){
 			$query .= ",`title`='".$post_movie_name."' ";	

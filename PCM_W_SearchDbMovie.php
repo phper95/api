@@ -1,7 +1,7 @@
 <?php
 /**
 * @api {post} /gmspanel/interface/zh-cn/3.1/PCM_W_SearchDbMovie.php 搜索豆瓣电影
-* @apiPermission pxseven
+* @apiPermission yongge
 * @apiVersion 0.1.0
 * @apiName SearchDbMovie
 * @apiGroup Work
@@ -15,7 +15,7 @@
 * @apiParam (POST) {String} token 用户的登录时返回的token,用于验证用户是否合法
 * @apiParam (POST) {String} keywords 用户在搜索框中输入的电影名
 * @apiParam (POST) {Integer} [page=0]  请求的分页页码
-* @apiParam (POST) {Integer} [limit=9] 请求的分页单页数目，即page=0&limit=9时，返回第0-8部作品，page=1&limit=9时，返回第9-17部作品
+* @apiParam (POST) {Integer} [limit=12] 请求的分页单页数目，即page=0&limit=12时，返回第0-11部作品，page=1&limit=12时，返回第12-23部作品
 
 *
 * @apiSuccess (ResponseJSON) {Integer} status 接口响应状态（0-失败,1-成功,2-需要弹出提示框,提示desc内容）.
@@ -27,71 +27,85 @@
 * @apiSuccess (ResponseJSON) {Integer} page_total 总页码数,一共有多少页.
 * @apiSuccess (ResponseJSON) {Integer} page_now 当前页码数.
 * @apiSuccess (ResponseJSON) {Integer} page_limit 当前每页展示多少部作品.
-* @apiSuccess (ResponseJSON) {Array[]} dbmsg 按照给定的page和limit等参数查出的作品数据集合
+
+* @apiSuccess (ResponseJSON) {Array[]} dbmsg 按照给定的page和limit等参数查出的作品数据集合（以下参数是dbmsg结构体中的元素，详情见返回参数示例）
+* @apiSuccess (ResponseJSON) {string[]} dbmsg.id 记录id
+* @apiSuccess (ResponseJSON) {string[]} dbmsg.name 电影名
+* @apiSuccess (ResponseJSON) {string[]} dbmsg.tag 电影类别
+* @apiSuccess (ResponseJSON) {string[]} dbmsg.tag 图片链接
+* @apiSuccess (ResponseJSON) {string[]} dbmsg.dburl 豆瓣链接
+* @apiSuccess (ResponseJSON) {string[]} dbmsg.imgurl 封面图url
 
 *
-* @apiSuccessExample Success-Response[提交成功]:
+*@apiSuccessExample Success-Response[提交成功]:
 
 *	{
-*	"status": 1,
-*	"usetime": "2.03422",
-*	"error": "",
-*	"debug": "na",
-*	"desc": "",
-*	"dbmsg": {
-*		"name": "谁的青春不迷茫",
-*		"rating": "6.5",
-*		"directors": [
+*		"status": 1,
+*		"usetime": "0.46171",
+*		"error": "",
+*		"debug": "na",
+*		"desc": "",
+*		"query": "SELECT * FROM `mdb_douban_movie` WHERE `title` LIKE '%号%';",
+*		"dbmsg": [
 *		{
-*		"celeid": "1324487",
-*		"name": "姚婷婷"
+*		"name": "泰坦尼克号",
+*		"tag": "剧情|励志",
+*		"imgurl": "http://img5.douban.com/view/movie_poster_cover/spst/public/p1499488396.jpg",
+*		"dburl": "http://movie.douban.com/subject/1292722/"
+*		},
+*		{
+*		"name": "海角七号",
+*		"tag": "剧情|励志",
+*		"imgurl": "http://img3.douban.com/view/movie_poster_cover/spst/public/p506963235.jpg",
+*		"dburl": "http://movie.douban.com/subject/3158990/"
+*		},
+*		{
+*		"name": "泰坦尼克号 3D版",
+*		"tag": "剧情|励志",
+*		"imgurl": "http://img3.douban.com/view/movie_poster_cover/spst/public/p1408665952.jpg",
+*		"dburl": "http://movie.douban.com/subject/5450891/"
+*		},
+*		{
+*		"name": "信号",
+*		"tag": "剧情|励志",
+*		"imgurl": "http://img3.douban.com/spic/s3786782.jpg",
+*		"dburl": "http://movie.douban.com/subject/3566709/"
+*		},
+*		{
+*		"name": "京城81号",
+*		"tag": "剧情|励志",
+*		"imgurl": "http://img3.douban.com/view/movie_poster_cover/spst/public/p2187047385.jpg",
+*		"dburl": "http://movie.douban.com/subject/20513061/"
+*		},
+*		{
+*		"name": "咖啡王子1号店",
+*		"tag": "剧情|励志",
+*		"imgurl": "http://img3.douban.com/spic/s3222324.jpg",
+*		"dburl": "http://movie.douban.com/subject/2216326/"
+*		},
+*		{
+*		"name": "爱情梦幻号",
+*		"tag": "剧情|励志",
+*		"imgurl": "http://img3.douban.com/view/movie_poster_cover/spst/public/p2226449093.jpg",
+*		"dburl": "http://movie.douban.com/subject/1308384/"
+*		},
+*		{
+*		"name": "非洲女王号",
+*		"tag": "剧情|励志",
+*		"imgurl": "http://img5.douban.com/spic/s1431828.jpg",
+*		"dburl": "http://movie.douban.com/subject/1418997/"
+*		},
+*		{
+*		"name": "亚特兰大号",
+*		"tag": "剧情|励志",
+*		"imgurl": "http://img3.douban.com/spic/s3736995.jpg",
+*		"dburl": "http://movie.douban.com/subject/1299433/"
 *		}
 *		],
-*		"actors": [
-*		{
-*		"celeid": "1342133",
-*		"name": "白敬亭"
-*		},
-*		{
-*		"celeid": "1355324",
-*		"name": "郭姝彤"
-*		},更多....
-*		],
-*		"tags": [
-*		"爱情"
-*		],
-*		"region": "中国大陆",
-*		"pubday": [
-*		"2016-04-22(中国大陆)"
-*		]
-*		},
-*		"query": "",
-*		"ingcount": 1,
-*		"okcount": 1,
-*		"weicount": 0,
-*	"ingmsg": [
-*	*	{
-*	*	"ingid": "93d48ab9ab3a6a55276c0a84db887466",
-*	*	"userid": "9999999O",
-*	*	"nickname": "图解电影-鞭基部",
-*	*	"avatar": "http://imgs4.graphmovie.com/appimage/bj_1.jpg",
-*	*	"update_time": "9小时前",
-*	*	"percent": "0"
-*	*	}
-*		],
-*	"okmsg": [
-		{
-		"okid": "f540eda2cd172baf51a4b5e80ad7162e",
-		"userid": "9993Z39W",
-		"nickname": "撇撇酱",
-		"avatar": "http://ser3.graphmovie.com/gmspanel/appimages/avatars/875782/20160108231835.jpg",
-		"workname": "撸片室の《谁的青春不迷茫》",
-		"worksubname": "我们还年轻，年轻就可以失败。",
-		"workscore": "0",
-		"workscorenum": "1"
-		}
-*	],
-*	"first_finished_reword": 500
+*		"searchcount": 200,
+*		"page_total": 23,
+*		"page_now": 0,
+*		"page_limit": 9,
 *	}
 
 
@@ -99,7 +113,6 @@
 * @apiError PostError 请求的参数缺失或者参数格式错误.
 * @apiError ServerError 服务器状态异常.
 * @apiError TokenTimeOut 用户会话超时或非法.
-* @apiError ErrorDoubanURL 豆瓣链接错误.
 
 *
 * @apiErrorExample Error-Response:
@@ -132,16 +145,6 @@
 *       "error": "TokenTimeOut",
 *       "debug": "",
 *       "desc": "会话超时,请重新登录"
-*     }
-
-*     ErrorDoubanURL:
-
-*     {
-*       "status": 2,
-*       "usetime": 0.0024,
-*       "error": "ErrorDoubanURL",
-*       "debug": "",
-*       "desc": "输入的豆瓣链接有误,请更正后再试"
 *     }
 
 */
@@ -206,8 +209,8 @@
 		}
 		
 		$post_keywords = htmlspecialchars(addslashes(trim($data->keywords)));
-		$page_now = isset($data->page_now) ? htmlspecialchars(addslashes($data->page_now)) : 0;
-		$page_limit = isset($data->page_limit) ? htmlspecialchars(addslashes($data->page_limit)) : 9;
+		$page_now = isset($data->page) ? htmlspecialchars(addslashes($data->page)) : 0;
+		$page_limit = isset($data->limit) ? htmlspecialchars(addslashes($data->limit)) : 12;
 		
 	}else if(
 		isset($_POST['keywords']) && strlen($_POST['keywords'])>0 &&
@@ -220,8 +223,8 @@
 		$post_userid = userIdKeyDecode(htmlspecialchars(addslashes($_POST['userid'])));
 		$post_token = htmlspecialchars(addslashes($_POST['token']));
 		$post_keywords = htmlspecialchars(addslashes(trim($_POST['keywords'])));
-		$page_now = isset($_POST['page_now']) ? htmlspecialchars(addslashes($_POST['page_now'])) : 0;
-		$page_limit = isset($_POST['page_limit']) ? htmlspecialchars(addslashes($_POST['page_limit'])) : 9;
+		$page_now = isset($_POST['page']) ? htmlspecialchars(addslashes($_POST['page'])) : 0;
+		$page_limit = isset($_POST['limit']) ? htmlspecialchars(addslashes($_POST['limit'])) : 12;
 		
 	}else{
 		//缺少参数
@@ -246,7 +249,14 @@
 		die();
 	}
 	mysqli_query($connection, "SET NAMES 'UTF8'");
-	
+
+
+//$sql = "UPDATE  `pcmaker_cker_msg` set `to_user_id`=630391 where id=3";
+/*$sql = "UPDATE  `pcmaker_work` set `state`=-2 where id=180";
+var_dump($sql);
+$result = mysqli_query($connection,$sql);
+var_dump($result);exit;*/
+
 	//查询用户token是否合法
 	//token 超时时间是3天
 	$okdate = date("Y-m-d H:i:s",strtotime("-3 day"));;
@@ -274,41 +284,74 @@ $json['searchcount']=0;
 $json['page_total']= 0;
 $json['page_now']= $page_now;
 $json['page_limit']= $page_limit;
-
-
-
+//$sql = "UPDATE  `pcmaker_cker_msg` set `work_id`=197 where id=4";
+//var_dump($sql);
+//$result = mysqli_query($connection,$sql);
+//var_dump($result);exit;
 
 
 
 	//OK TOKEN 合法
 	//搜索mdb_douban_movie表，按标题搜索
 
-	$query = 'SELECT * FROM `mdb_douban_movie` WHERE `title` LIKE \'%'.$post_keywords.'%\';';
+//组装查询条件
+header("Content-type:text/html;charset=utf-8");
+$keywords='.*';
+$searchWords = mbstringToArray(trimall($post_keywords),'utf-8');
+foreach($searchWords as $val){
+	if($val != '.'&&$val != '*'){
+		$keywords .=$val.'.*';
+	}
+
+}
+
+//$json['keywords'] = $keywords;
+function mbstringToArray($str,$charset) {
+	$strlen=mb_strlen($str);
+	while($strlen){
+		$array[]=mb_substr($str,0,1,$charset);
+		$str=mb_substr($str,1,$strlen,$charset);
+		$strlen=mb_strlen($str);
+	}
+	return $array;
+}
+
+//删除空格
+function trimall($str)
+{
+	$qian=array(" ","　","\t","\n","\r");$hou=array("","","","","");
+	return str_replace($qian,$hou,$str);
+}
+
+
+	$query = 'SELECT * FROM `mdb_douban_movie` WHERE `title` REGEXP \''.$keywords.'\';';
 
 	//分页查询
-	$start_index = $page_now*$post_limit;
-	$query1 = 'SELECT * FROM `mdb_douban_movie` WHERE `title` LIKE \'%'.$post_keywords.'%\' LIMIT '.$start_index.','.$post_limit.';';
+	$start_index = $page_now*$page_limit;
+	$query1 = 'SELECT * FROM `mdb_douban_movie` WHERE `title` REGEXP \''.$keywords.'\' LIMIT '.$start_index.','.$page_limit.';';
 
 	$result = mysqli_query($connection,$query);
-	//$json['query'] = $query1;
+	//$json['query1'] = $query1;
+	//$json['query'] = $query;
+
 	if($result){
 		$json['searchcount'] = mysqli_num_rows($result);
-		$json['page_total'] = ceil(mysqli_num_rows($result)/$post_limit);
+		$json['page_total'] = ceil(mysqli_num_rows($result)/$page_limit);
 	}
 
 	$result1 = mysqli_query($connection,$query1);
-
+	$dbmsg='';
 	if($result1){
 		if(mysqli_num_rows($result1)>0){
 			$i=0;
 			$dbmsg = array();
 			while($i<mysqli_num_rows($result1)){
 				$record = mysqli_fetch_assoc($result1);
-
 					$msg = array(
+						"id" => is_null($record['id']) ? '' : $record['id'],
 						"name" => is_null($record['title']) ? '' : $record['title'],
-						"tag" => is_null($record['genres_str']) ? '' : $record['genres_str'],
-						"imgurl" => is_null($record['face_65x100']) ? '' : str_replace('/img\d/','img3',str_replace('ipst','spst',$record['face_65x100'])),
+						"tag" => is_null($record['genres_str']) ? '' : str_replace(',','|',$record['genres_str']),
+						"imgurl" => is_null($record['face_65x100']) ? '' : str_replace('img5','img3',str_replace('ipst','spst',$record['face_65x100'])),
 						"dburl" => is_null($record['db_url'])? '' :$record['db_url']
 					);
 					$dbmsg[] = $msg;
@@ -319,7 +362,7 @@ $json['page_limit']= $page_limit;
 		}
 	}
 
-	$json['dbmsg'] = $dbmsg;
+	$json['dbmsg'] = is_null($dbmsg) ? '': $dbmsg;
 
 	//结束
 	$json['status']= 1;

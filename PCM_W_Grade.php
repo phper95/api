@@ -1,7 +1,7 @@
 <?php
 /**
 * @api {post} /gmspanel/interface/zh-cn/3.1/PCM_W_Grade.php 为作品评分
-* @apiPermission pxseven
+* @apiPermission yongge
 * @apiVersion 0.1.0
 * @apiName Grade
 * @apiGroup Work

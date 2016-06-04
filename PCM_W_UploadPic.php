@@ -16,7 +16,7 @@
 * @apiParam (POST) {String} workid 用户正在创作作品的作品ID
 * @apiParam (POST) {String} uploadkey 用户作品对应的版本标识
 * @apiParam (POST) {String} regcer 之前SetUpUpload接口请求到的签名证书
-* @apiParam (POST) {Integer} pageindex 该图片的页序，注意由于封面图也需要上传，小封面图spic(图片名03.png)页序编号为-3，大封面图bpic(图片名02.png)页序编号为-2，图解第一页fpic(图片名01.png)页序编号为-1，其余正常解说图片从0开始编号，如果没有指定封面不发即可
+* @apiParam (POST) {Integer} pageindex 该图片的页序，注意由于封面图也需要上传，小封面图spic(图片名03.png)页序编号为-3，大封面图bpic(图片名02.png)页序编号为-2，图解第一页fpic(图片名01.png)页序编号为-1，其余正常解说图片从0开始编号（0为高斯模糊图），如果没有指定封面不发即可
 * @apiParam (POST) {String} [intro=".."] 该页图片的解说，按照页序每次覆写，如第7页的解说和图片已发过一次，再次上传第7页将会覆盖之前的第7页数据
 * @apiParam (POST) {FILE} imgdata 图解的图片的数据，无需压缩，高清图即可.
 

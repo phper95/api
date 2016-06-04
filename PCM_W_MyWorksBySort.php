@@ -1,7 +1,7 @@
 <?php
 /**
 * @api {post} /gmspanel/interface/zh-cn/3.1/PCM_W_MyWorksBySort.php 根据不同条件获取作品分类
-* @apiPermission pxseven
+* @apiPermission yongge
 * @apiVersion 0.1.0
 * @apiName MyWorksBySort
 * @apiGroup Work
@@ -88,6 +88,7 @@
 * @apiSuccess (ResponseJSON) {String} work.offline_time 作品如已被下线，下线时间.
 * @apiSuccess (ResponseJSON) {String} work.ck_feedback 被下线作品的编辑审核反馈.
 * @apiSuccess (ResponseJSON) {String} work.fb_repay_id 回复编辑审核反馈时上报的id.
+* @apiSuccess (ResponseJSON) {String} work.fb_verfier_id 编辑审核者的user_id.
 
 *
 * @apiSuccessExample Success-Response[提交成功]:
@@ -114,7 +115,6 @@
 *				"author":"威廉·惠勒",
 *				"actor":"奥黛丽·赫本，雪莉·麦克雷恩，詹姆斯·加纳",
 *				"intro":"凯伦（奥黛丽·赫本 Audrey Hepburn 饰）和玛莎（雪莉·麦克雷恩 Shirley MacLaine 饰）共同管理着一间私立学校，尽管身为女流之辈，但她们特立独行英明果断的作风还是赢得了许多学生和老师的喜爱，两人之间的友谊也十分坚固。玛丽（Karen Balkin 饰）从小就过着娇生惯养的生活，成长于溺爱之中的她逐渐养成了乖僻的扭曲个性。
-　　在一次犯错之后，玛丽遭到了凯伦与玛莎的惩罚，可这种惩罚在玛丽看来简直是奇耻大辱，仇恨的种子在她幼小的心灵里生根发芽。玛丽告诉祖母，她无意之中看到了凯伦和玛莎接吻的场面，愤怒的祖母将这子虚乌有的诽谤公之于众。面对来势汹汹的欲加之罪，凯伦和玛莎先是奋起反抗，但很快她们便发现，她们手中唯一的筹码——真诚与坦荡竟然是这样的无足轻重。",
 *				"showtime":"1961",
 *				"zone":"美国",
 *				"score":"7",
@@ -158,7 +158,8 @@
 *				"takeon_time":"",
 *				"offline_time":"",
 *				"ck_feedback":"第13,14,15页有露点照片，请注意哦亲！",
-*				"fb_repay_id":"201"
+*				"fb_repay_id":"201",
+*				"fb_verfier_id":"0"
 *			},
 *			...
 *		],
@@ -552,7 +553,7 @@
 
 
 
-
+//var_dump($query);
 		$result = mysqli_query($connection,$query);
 		if($result){
 			if(mysqli_num_rows($result)>0){
@@ -621,7 +622,7 @@
 				$json_work['act_name']='';
 				$json_work['page_count']=0;
 				$json_work['size']='';
-				$json_work['state']='';
+				$json_work['state']=$work['state'];
 				$json_work['movie_id']='';
 				$json_work['movie_played']='';
 				$json_work['movie_poptxt']='';
@@ -643,6 +644,7 @@
 				$json_work['offline_time']='';
 				$json_work['ck_feedback']='';
 				$json_work['fb_repay_id']='';
+				$json_work['fb_verfier_id'] = 0;
 
 				//查询出封面存储地址
 				if(strlen($work['bpic_id'])>0 && $work['bpic_id']>0){
@@ -792,24 +794,31 @@
 
 				
 				//时间
-				$json_work['creat_time'] = date('Y-m-d H:i',$work['creat_time']);		//作品创建时间
-				$json_work['submit_time'] = date('Y-m-d H:i',$work['submit_time']);	//作品提交时间
-				$json_work['update_time'] = date('Y-m-d H:i',$work['update_time']);	//作品变更时间
-				$json_work['takeon_time'] = date('Y-m-d H:i',$work['takeon_time']);	//作品收录时间
-				$json_work['offline_time'] = date('Y-m-d H:i',$work['offline_time']);//作品下线时间
+				$json_work['creat_time'] = date('Y-m-d H:i',strtotime($work['creat_time']));		//作品创建时间
+				$json_work['submit_time'] = date('Y-m-d H:i',strtotime($work['submit_time']));	//作品提交时间
+				$json_work['update_time'] = date('Y-m-d H:i',strtotime($work['submit_time']));	//作品变更时间
+				$json_work['takeon_time'] = date('Y-m-d H:i',strtotime($work['takeon_time']));	//作品收录时间
+				$json_work['offline_time'] = date('Y-m-d H:i',strtotime($work['offline_time']));//作品下线时间
 
 				//评审意见
 				$json_work['ck_feedback'] = '';
 				$json_work['fb_repay_id'] = '';
+
 				//只有自主下线或者评审下线才有评审意见
 				if($post_state==4){
-					$query = 'SELECT * FROM `pcmaker_cker_msg` WHERE `work_id`='.$work['id'].' ORDER BY `id` DESC LIMIT 1;';
+					$query = 'SELECT * FROM `pcmaker_cker_msg` WHERE `work_id`='.$work['id'].' AND `to_user_id`='.$post_userid.' ORDER BY `id` DESC LIMIT 1;';
 					$ck_result = mysqli_query($connection,$query);
 					if($ck_result && mysqli_num_rows($ck_result)>0){
 						$ck_record = mysqli_fetch_assoc($ck_result);
 						$json_work['ck_feedback'] = $ck_record['content'];
 						$json_work['fb_repay_id'] = $ck_record['id'];
+						$json_work['fb_verfier_id'] = $ck_record['sender_user_id'];
 					}
+				}
+
+				//state=-1用户手动下线
+				if($work['state'] ==-1){
+					$json_work['ck_feedback'] = '手动下线';
 				}
 				
 				//存储json_work
@@ -916,6 +925,7 @@
 				$json_work['takeon_time']='';
 				$json_work['ck_feedback']='';
 				$json_work['fb_repay_id']='';
+				$json_work['fb_verfier_id'] = 0;
 
 				$json_work['workid'] = md5('movieid:'.$movie['id']);
 				$json_work['title'] = is_null($movie['name'])?'':$movie['name'];
@@ -1036,12 +1046,11 @@
 				//再查询出film的记录
 				$json_work['film_id'] = '';
 				$json_work['film_name'] = '';
-				
 				//时间
 				$json_work['creat_time'] = '';		//作品创建时间
 				$json_work['submit_time'] = '';	//作品提交时间
 				$json_work['update_time'] = '';	//作品变更时间
-				$json_work['takeon_time'] = date('Y-m-d H:i',$movie['add_time']);	//作品收录时间
+				$json_work['takeon_time'] = date('Y-m-d H:i',strtotime($movie['add_time']));	//作品收录时间
 				$json_work['offline_time'] = '';	//作品下线时间
 				
 				//评审意见

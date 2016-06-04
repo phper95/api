@@ -1,7 +1,7 @@
 <?php
 /**
 * @api {post} /gmspanel/interface/zh-cn/3.1/PCM_W_CreatWithNew.php 新建一部原创作品(仅供内部接口调用)
-* @apiPermission pxseven
+* @apiPermission yongge
 * @apiVersion 0.1.0
 * @apiName CreatWithNew
 * @apiGroup Work
@@ -224,11 +224,12 @@
 							spic_md5,
 							firstpage_md5,
 							tv_type,
-							creat_time
+							creat_time,
+							submit_time
 							) VALUES ('.
 				'\''.$workkey.'\','.
 				 $post_userid.','.
-				 '\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',7.0,0,0,0,0,\'\',\'\',0,0,0,0,1,0,0,\'\',\'\',\'\',0,now(),now(),\'\',\'\',\'\',0,now()'.
+				 '\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',7.0,0,0,0,0,\'\',\'\',0,0,0,0,1,0,0,\'\',\'\',\'\',0,now(),now(),\'\',\'\',\'\',0,now(),now()'.
 	');';
 	$result = mysqli_query($connection, $query);
 	

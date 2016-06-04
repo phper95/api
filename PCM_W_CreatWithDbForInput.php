@@ -523,11 +523,12 @@
 							spic_md5,
 							firstpage_md5,
 							tv_type,
-							creat_time
+							creat_time,
+							submit_time
 							) VALUES ('.
 				'\''.$workkey.'\','.
 				 $post_userid.','.
-				 '\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',7.0,0,0,0,0,\'\',\'\',0,0,0,0,1,0,0,\'\',\''.$dburl.'\',\''.$subject_id.'\',0,now(),now(),\'\',\'\',\'\',0,now()'.
+				 '\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',7.0,0,0,0,0,\'\',\'\',0,0,0,0,1,0,0,\'\',\''.$dburl.'\',\''.$subject_id.'\',0,now(),now(),\'\',\'\',\'\',0,now(),now()'.
 	');';
 	$result = mysqli_query($connection, $query);
 	

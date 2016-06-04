@@ -24,7 +24,7 @@
 * @apiParam (POST) {Integer} imgs 上传图片的体积，单位是字节
 * @apiParam (POST) {String} imgt 上传图片的类型，支持BMP,PNG,JPG,GIF
 * @apiParam (POST) {String} svk 加密的验证key，用于验证请求是否有效
-* @apiParam (POST) {Integer} pageindex 该图片的页序，注意由于封面图也需要上传，小封面图spic(图片名03.png)页序编号为-3，大封面图bpic(图片名02.png)页序编号为-2，图解第一页fpic(图片名01.png)页序编号为-1，其余正常解说图片从0开始编号，如果没有指定封面不发即可
+* @apiParam (POST) {Integer} pageindex 该图片的页序，注意由于封面图也需要上传，小封面图spic(图片名03.png)页序编号为-3，大封面图bpic(图片名02.png)页序编号为-2，图解第一页fpic(图片名01.png)页序编号为-1，其余正常解说图片从0开始编号（0为高斯模糊图），如果没有指定封面不发即可
 
 *
 * @apiSuccess (ResponseJSON) {Integer} status 接口响应状态（0-失败,1-成功,2-需要弹出提示框,提示desc内容）.

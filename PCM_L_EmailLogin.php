@@ -587,8 +587,8 @@
 				'email'=>$user->email,
 				'level'=>$user->level
 			);
-			$role 		= check_user_level_string($usermsg,$user->connect_memcache,$user->connect_database);
-			$level 		= check_user_role_string($usermsg,$user->connect_memcache,$user->connect_database);
+			$level 		= check_user_level_string($usermsg,$user->connect_memcache,$user->connect_database);
+			$role 		= check_user_role_string($usermsg,$user->connect_memcache,$user->connect_database);
 			
 			//未读消息
 			$unread = 0;

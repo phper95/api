@@ -1,7 +1,7 @@
 <?php
 /**
 * @api {post} /gmspanel/interface/zh-cn/3.1/PCM_W_GetDbRelatedInfo.php 通过豆瓣URL获取相关作品信息
-* @apiPermission pxseven
+* @apiPermission yongge
 * @apiVersion 0.1.0
 * @apiName GetDbRelatedInfo
 * @apiGroup Work
@@ -22,22 +22,33 @@
 * @apiSuccess (ResponseJSON) {String} debug 接口响应出错时的过程描述,调试用.
 * @apiSuccess (ResponseJSON) {String} desc status=2时需要弹窗提示此内容.
 * @apiSuccess (ResponseJSON) {Object} dbmsg 此豆瓣链接关联的电影信息.
+* @apiSuccess (ResponseJSON) {Array[]} dbmsg 信息的结构体，具体可参见下面Success-Response中的示例.
+ * @apiSuccess (ResponseJSON) {String} dbmsg.name 豆瓣电影名,
+* @apiSuccess (ResponseJSON) {String} dbmsg.score 豆瓣电影评分,
+* @apiSuccess (ResponseJSON) {String} dbmsg.author 豆瓣电影导演,
+* @apiSuccess (ResponseJSON) {String} dbmsg.actors 豆瓣电影演员,
+* @apiSuccess (ResponseJSON) {String} dbmsg.tags 豆瓣电影类型,
+* @apiSuccess (ResponseJSON) {String} dbmsg.region 豆瓣电影上映地区,
+* @apiSuccess (ResponseJSON) {String} dbmsg.pubday 豆瓣电影上映时间,
+* @apiSuccess (ResponseJSON) {String} dbmsg.coverimg 豆瓣电影封面图,
 * @apiSuccess (ResponseJSON) {Integer} ingcount 当前正在制作这部作品的其他作者有几个.
 * @apiSuccess (ResponseJSON) {Integer} okcount 当前已经上线的这部影片的图解有几部.
 * @apiSuccess (ResponseJSON) {Integer} weicount 当前已经上线的这部影片的微图解有几部（目前没有统计微图解的数量，暂时返回0）.
 * @apiSuccess (ResponseJSON) {Integer} waitingcount 当前作品期待人数（目前没有此功能，返回10000-100000之间的随机数）.
-* @apiSuccess (ResponseJSON) {Array[]} ingmsg 信息的结构体，在JSON中是不存在此key的，这里只是为了说明，具体可参见下面Success-Response中的示例.
+* @apiSuccess (ResponseJSON) {Integer} contributecount 贡献图库的图解师人数（目前没有此功能，返回0）.
+* @apiSuccess (ResponseJSON) {Array[]} ingmsg 信息的结构体，具体可参见下面Success-Response中的示例.
 * @apiSuccess (ResponseJSON) {String} ingmsg.ingid 记录ID，保证各个msg结构此键值不同，客户端使用.
 * @apiSuccess (ResponseJSON) {String} ingmsg.userid 作者信息中的用户ID.
 * @apiSuccess (ResponseJSON) {String} ingmsg.nickname 作者信息中的昵称.
 * @apiSuccess (ResponseJSON) {String} ingmsg.avatar 作者信息中的头像URL.
 * @apiSuccess (ResponseJSON) {String} ingmsg.update_time 作者最后制作该图解的时间,如"9小时前".
 * @apiSuccess (ResponseJSON) {Integer} ingmsg.percent 作者已经完成的进度[0-100],如40,65,99.
-* @apiSuccess (ResponseJSON) {Array[]} okmsg 信息的结构体，在JSON中是不存在此key的，这里只是为了说明，具体可参见下面Success-Response中的示例.
+* @apiSuccess (ResponseJSON) {Array[]} okmsg 信息的结构体，具体可参见下面Success-Response中的示例.
 * @apiSuccess (ResponseJSON) {String} okmsg.okid 记录ID，保证各个msg结构此键值不同，客户端使用.
+* @apiSuccess (ResponseJSON) {String} okmsg.movie_id 记录ID，保证各个msg结构此键值不同，客户端使用.
 * @apiSuccess (ResponseJSON) {String} okmsg.userid 作者信息中的用户ID.
 * @apiSuccess (ResponseJSON) {String} okmsg.nickname 作者信息中的昵称.
-* @apiSuccess (ResponseJSON) {String} okmsg.avatar 作者信息中的头像URL.
+* @apiSuccess (ResponseJSON) {String} okmsg.coverimg 作品封面图的URL.
 * @apiSuccess (ResponseJSON) {Integer} okmsg.workname 作者已上线作品的名称.
 * @apiSuccess (ResponseJSON) {Integer} okmsg.worksubname 作者已上线作品的副标题.
 * @apiSuccess (ResponseJSON) {Integer} okmsg.workscore 作者已上线作品的分数.
@@ -53,60 +64,43 @@
 *	"error": "",
 *	"debug": "na",
 *	"desc": "",
+* 	"query": "",
+*	"ingcount": 1,
+*	"okcount": 1,
+*	"weicount": 0,
+*	"contributecount": 0,
+*   "first_finished_reword": 500,
 *	"dbmsg": {
-*		"name": "谁的青春不迷茫",
-*		"rating": "6.5",
-*		"directors": [
+*		"name": "魔宫魅影",
+*		"score": "",
+*		"author": "叶伟民",
+*		"actors": "林心如/杨祐宁/任达华/黄幻/景岗山/林江国/孟瑶/张子枫/黄磊/李菁/何云伟",
+*		"tags": "惊悚",
+*		"region": "中国大陆 / 香港",
+*		"pubday": "2016-04-29(中国大陆)",
+*		"coverimg": "https://img3.doubanio.com/view/movie_poster_cover/spst/public/p2331558412.jpg"
+*		},
+
+*	"ingmsg": [
 *		{
-*		"celeid": "1324487",
-*		"name": "姚婷婷"
+*		"ingid": "93d48ab9ab3a6a55276c0a84db887466",
+*		"nickname": "图解电影-鞭基部",
+*		"avatar": "http://imgs4.graphmovie.com/appimage/bj_1.jpg",
+*		"update_time": "9小时前",
+*		"percent": "0"
 *		}
 *		],
-*		"actors": [
-*		{
-*		"celeid": "1342133",
-*		"name": "白敬亭"
-*		},
-*		{
-*		"celeid": "1355324",
-*		"name": "郭姝彤"
-*		},更多....
-*		],
-*		"tags": [
-*		"爱情"
-*		],
-*		"region": "中国大陆",
-*		"pubday": [
-*		"2016-04-22(中国大陆)"
-*		]
-*		},
-*		"query": "",
-*		"ingcount": 1,
-*		"okcount": 1,
-*		"weicount": 0,
-*	"ingmsg": [
-*	*	{
-*	*	"ingid": "93d48ab9ab3a6a55276c0a84db887466",
-*	*	"userid": "9999999O",
-*	*	"nickname": "图解电影-鞭基部",
-*	*	"avatar": "http://imgs4.graphmovie.com/appimage/bj_1.jpg",
-*	*	"update_time": "9小时前",
-*	*	"percent": "0"
-*	*	}
-*		],
 *	"okmsg": [
-		{
-		"okid": "f540eda2cd172baf51a4b5e80ad7162e",
-		"userid": "9993Z39W",
-		"nickname": "撇撇酱",
-		"avatar": "http://ser3.graphmovie.com/gmspanel/appimages/avatars/875782/20160108231835.jpg",
-		"workname": "撸片室の《谁的青春不迷茫》",
-		"worksubname": "我们还年轻，年轻就可以失败。",
-		"workscore": "0",
-		"workscorenum": "1"
-		}
+*		{
+*		"okid": "f540eda2cd172baf51a4b5e80ad7162e",
+*		"nickname": "撇撇酱",
+*		"coverimg": "http://s1.dwstatic.com/group1/M00/C9/D3/c9d3b5829c6c401da8f20626b12f46768600.jpg",
+*		"workname": "撸片室の《谁的青春不迷茫》",
+*		"worksubname": "我们还年轻，年轻就可以失败。",
+*		"workscore": "0",
+*		"workscorenum": "1"
+*		}
 *	],
-*	"first_finished_reword": 500
 *	}
 
 
@@ -256,7 +250,8 @@
 		die();
 	}
 	mysqli_query($connection, "SET NAMES 'UTF8'");
-	
+
+
 	//查询用户token是否合法
 	//token 超时时间是3天
 	$okdate = date("Y-m-d H:i:s",strtotime("-3 day"));;
@@ -282,17 +277,19 @@
 $json['dbmsg']='';
 $db_info = array();
 $db_info['name'] = '';
-$db_info['rating'] ='';
-$db_info['directors'] ='';
+$db_info['score'] ='';
+$db_info['author'] ='';
 $db_info['actors'] = '';
 $db_info['tags'] = '';
 $db_info['region'] = '';
 $db_info['pubday'] = '';
+$db_info['coverimg']='';
 
 $json['ingcount']='';
 $json['okcount']=0;
 $json['weicount']=0;
 $json['waitingcount']=0;
+$json['contributecount']=0;
 
 $ingmsg = array();
 $json['ingmsg']='';
@@ -380,13 +377,12 @@ $json['okmsg']='';
 	
 	//是豆瓣的ID了 再来请求
 	$dburl = $subject_preurl.'subject/'.$subject_id.'/';
-	
 	//请求是否可以请求通
 	/*
 	Array ( [0] => HTTP/1.1 404 Not Found [1] => Server: dae [2] => Date: Fri, 15 Jan 2016 09:42:49 GMT [3] => Content-Type: text/html; charset=utf-8 [4] => Content-Length: 33076 [5] => Connection: close [6] => Expires: -1 )
 	Array ( [0] => HTTP/1.1 403 Forbidden [1] => Server: dae [2] => Date: Fri, 15 Jan 2016 09:48:47 GMT [3] => Content-Type: text/html [4] => Content-Length: 160 [5] => Connection: close )
 	*/
-	$db_html = file_get_contents($dburl);
+	/*$db_html = file_get_contents($dburl);
 	if(strrpos($http_response_header[0],'404') || strrpos($http_response_header[0],'403')){
 		//错误的URL不能请求
 		//关闭连接
@@ -398,37 +394,98 @@ $json['okmsg']='';
 		$json_code = json_encode($json);
 		echo $json_code;
 		die();
-	};
+	};*/
 	
 	//OK豆瓣验证通过
+$dbquery = 'SELECT * FROM `mdb_douban_movie` WHERE `db_id` = \''.$subject_id.'\';';
+$dbresult =  mysqli_query($connection,$dbquery);
+if($dbresult){
+	if(mysqli_num_rows($dbresult)==0){
+		//本地没有就抓取
+		//校验豆瓣链接
+		$db_header = get_headers($dburl);
+		if(!$db_header){
+			//错误的URL不能请求
+			//关闭连接
+			if($connection)mysqli_close($connection);
+			$json['status']= 2;
+			$json['usetime'] = endtime($start_time);
+			$json['error'] = 'ErrorDoubanURL';
+			$json['desc'] = "输入的豆瓣链接有误,请更正后再试]";
+			$json_code = json_encode($json);
+			echo $json_code;
+			die();
+		}
 
-//获取该豆瓣关联的电影信息
-$post_string = 'ck='.strtolower(md5($subject_id.'graphmoviestudiosapi')).'&subid='.$subject_id;
-//echo $post_string;
+		//调用抓取接口
+		//适配本地调试处理
+		if($_SERVER['HTTP_HOST']=='localhost'){
+			$response_json = request_by_curl('http://localhost/gms/PCM_OFC_DoubanMsg.php',$post_string);
+		}else{
+			$response_json = request_by_curl('http://ser3.graphmovie.com/gmspanel/interface/zh-cn/3.1/PCM_OFC_DoubanMsg.php',$post_string);
+		}
 
-//适配本地调试处理
-if($_SERVER['HTTP_HOST']=='localhost'){
-	$response_json = request_by_curl('http://localhost/gms/PCM_OFC_DoubanMsg.php',$post_string);
-}else{
-	$response_json = request_by_curl('http://ser3.graphmovie.com/gmspanel/interface/zh-cn/3.1/PCM_OFC_DoubanMsg.php',$post_string);
-}
+		$json_struct = @json_decode($response_json);
 
+		if($json_struct && isset($json_struct->status)){
+			if($json_struct->status==1){
+				//豆瓣电影名
+				$db_info['name'] = $json_struct->dbmsg->title;
 
-$json_struct = @json_decode($response_json);
+				//评分
+				$db_info['score'] =$json_struct->dbmsg->rating;
 
-if($json_struct && isset($json_struct->status)){
-	if($json_struct->status==1){
-		$db_info['name'] = $json_struct->dbmsg->title;
-		$db_info['rating'] =$json_struct->dbmsg->rating;
-		$db_info['directors'] =$json_struct->dbmsg->directors;
-		$db_info['actors'] = $json_struct->dbmsg->actors;
-		$db_info['tags'] = $json_struct->dbmsg->tags;
-		$db_info['region'] = $json_struct->dbmsg->zone;
-		$db_info['pubday'] = $json_struct->dbmsg->pubday;
+				//导演
+				foreach($json_struct->dbmsg->directors as $v){
+					$db_info['author'] .= $v->name.'/';
+				}
+
+				$db_info['author'] =rtrim($db_info['author'],'/');
+
+				//主演
+				foreach($json_struct->dbmsg->actors as $val){
+					$db_info['actors'] .= $val->name.'/';
+				}
+				$db_info['actors'] = rtrim($db_info['actors'],'/');
+
+				//类型
+				foreach($json_struct->dbmsg->tags as $value){
+					$db_info['tags'] .= $value.'|';
+				}
+				$db_info['tags'] = rtrim($db_info['tags'],'|');
+
+				//区域
+				$db_info['region'] = $json_struct->dbmsg->zone;
+
+				//上映时间
+				$db_info['pubday'] = $json_struct->dbmsg->pubday[0];
+
+				//封面图
+				$db_info['coverimg'] = $json_struct->dbmsg->cover;
+				$json['dbmsg'] = $db_info;
+
+			}
+		}
+
+	}else{
+		$db_local = mysqli_fetch_assoc($dbresult);
+		$db_info['name'] = is_null($db_local['title'])?'':$db_local['title'];
+		$db_info['author'] = is_null($db_local['directors_str'])?'': str_replace(',','/',$db_local['directors_str']);
+		$db_info['actors'] = is_null($db_local['actors_str'])?'': str_replace(',','/',$db_local['actors_str']);
+		$db_info['score'] = is_null($db_local['score'])?'': $db_local['score'];
+		$db_info['tags'] = is_null($db_local['genres_str'])?'': str_replace(',','|',$db_local['genres_str']);
+		$db_info['region'] = is_null($db_local['zone'])?'':$db_local['zone'];
+		$db_info['pubday'] = is_null($db_local['showtimes_str'])?'': substr($db_local['showtimes_str'],0,4);
+		$db_info['coverimg'] = is_null($db_local['face_65x100'])?'':str_replace('img5','img3',str_replace('ipst','spst',$db_local['face_65x100']));
 		$json['dbmsg'] = $db_info;
 
 	}
 }
+//获取该豆瓣关联的电影信息
+$post_string = 'ck='.strtolower(md5($subject_id.'graphmoviestudiosapi')).'&subid='.$subject_id;
+//echo $post_string;
+
+
 	
 	//检测电影数据库是否存在此ID 没有就存入待抓取队列 补完电影数据库
 	//目前mdb_film中没有一条记录有豆瓣的KEY 但是这里当做有来处理 
@@ -469,9 +526,9 @@ if($json_struct && isset($json_struct->status)){
 	$res_ingcount = 0;
 	$poptitle = '当前没有人在图解此影片哟！';
 	$popdesc = '';
-	$query = 'SELECT *, count(distinct `user_id`) FROM `pcmaker_work` WHERE `db_id`=\''.$subject_id.'\' AND `state`=1 GROUP BY `user_id`;';
+	$query = 'SELECT *, count(`user_id`) FROM `pcmaker_work` WHERE `db_id`=\''.$subject_id.'\' AND `state`=1 GROUP BY `user_id`;';
 	//只需取五条且user_id不同
-	$query1 = 'SELECT *,count(distinct `user_id`) FROM `pcmaker_work` WHERE `db_id`=\''.$subject_id.'\' AND `state`=1 GROUP BY `user_id` LIMIT 5;';
+	$query1 = 'SELECT *,count(`user_id`) FROM `pcmaker_work` WHERE `db_id`=\''.$subject_id.'\' AND `state`=1 GROUP BY `user_id` LIMIT 5;';
 
 	$result = mysqli_query($connection,$query);
 	//$json['query'] = $query1;
@@ -498,10 +555,10 @@ if($json_struct && isset($json_struct->status)){
 
 					$msg = array(
 						"ingid" => is_null($record['work_key']) ? '' : $record['work_key'],
-						"userid" => is_null((string)userIdKeyEncode($user['id'])) ? '' : (string)userIdKeyEncode($user['id']),
+						//"userid" => is_null((string)userIdKeyEncode($user['id'])) ? '' : (string)userIdKeyEncode($user['id']),
 						"nickname" => is_null((string)$user['name']) ? '' : (string)$user['name'],
 						"avatar" => $user['avatar']?$user['avatar']:'http://imgs4.graphmovie.com/appimage/app_default_avatar.jpg',
-						"update_time" => (string)getDateStyle(strtotime($record['update_time'])),
+						"update_time" => (string)getDateStyle(strtotime($record['submit_time'])),
 						"percent" => is_null($record['progress']) ? '' : $record['progress']
 					);
 					$ingmsg[] = $msg;
@@ -520,6 +577,17 @@ if($json_struct && isset($json_struct->status)){
 	$res_okcount = 0;
 	$okdesc = '';
 	$okmsg = array();
+	$msg['okid']='';
+	$msg['nickname']='';
+	$msg['coverimg']='';
+	$msg['worksubname']='';
+	$msg['workscore']='';
+	$msg['workscorenum']='';
+
+
+
+
+
 	$query = 'SELECT * FROM `mdb_movie_v_link` WHERE `link_type`=1 AND `link_url` LIKE \'%douban.com/subject/'.$subject_id.'/%\';';
 	//只查2条记录用于界面显示
 	$query2 = 'SELECT * FROM `mdb_movie_v_link` WHERE `link_type`=1 AND `link_url` LIKE \'%douban.com/subject/'.$subject_id.'/%\' ORDER BY `add_time` LIMIT 2;';
@@ -534,7 +602,7 @@ if($json_struct && isset($json_struct->status)){
 
 				$record = mysqli_fetch_assoc($result2);
 				//查询movie信息
-				$query = 'SELECT `name`,`sub_title`,`score`,`played`,`ding`,`grapher` FROM `movie` WHERE `id`='.$record['movie_id'].' AND `open`=1;';
+				$query = 'SELECT `name`,`sub_title`,`bpic`,`score`,`played`,`ding`,`grapher` FROM `movie` WHERE `id`='.$record['movie_id'].' AND `open`=1;';
 				$movie_result = mysqli_query($connection,$query);
 				if($movie_result && mysqli_num_rows($movie_result)>0){
 					$movie = mysqli_fetch_assoc($movie_result);
@@ -545,28 +613,30 @@ if($json_struct && isset($json_struct->status)){
 					$user_result = mysqli_query($connection,$query);
 
 					//查评分人数（movie_v_gmscore_record）
-					$score_query = 'SELECT * FROM `movie_v_gmscore_record` WHERE `movie_id`='.$record['movie_id'].' AND `score_type`=1;';
-					$score_result = mysqli_query($connection,$query);
-					$score_num = mysqli_num_rows($score_result);
+					$score_query = 'SELECT *,avg(`score_value`) AS score,count(1) AS num FROM `movie_v_gmscore_record` WHERE `movie_id`='.$record['movie_id'].' AND `score_type`=1;';
+					$score_result = mysqli_query($connection,$score_query);
+					//$score_num = mysqli_num_rows($score_result);
+
 					$score = mysqli_fetch_assoc($score_result);
-					if($score_num){
-						$gmscore = $score['score_value'];
+					if($score['num']){
+						$gmscore = is_null($score['score'])? '':round($score['score'],1);
 					}else{
 						$gmscore = 0;
 					}
 
 					if($user_result && mysqli_num_rows($user_result)>0){
 						$user = mysqli_fetch_assoc($user_result);
-						
 						$msg = array(
-							"okid" => is_null(md5(userIdKeyEncode($record['movie_id']))) ? '': md5(userIdKeyEncode($record['movie_id'])),
+							"okid" => md5(userIdKeyEncode($record['movie_id'])),
+							'movie_id'=>$record['movie_id'],
 							"userid" => is_null((string)userIdKeyEncode($user['id'])) ? '': (string)userIdKeyEncode($user['id']),
-							"nickname" => is_null((string)$user['name']) ? '': (string)$user['name'],
-							"avatar" => $user['avatar']?$user['avatar']: 'http://imgs4.graphmovie.com/appimage/app_default_avatar.jpg',
-							"workname" => is_null($movie['name']) ? '': $movie['name'],
-							"worksubname" => is_null($movie['sub_title']) ? '' : $movie['sub_title'],
-							"workscore" => is_null($gmscore) ? : $gmscore,
-							"workscorenum" => is_null((string)number_2_numberFont($score_num)) ? '' : (string)number_2_numberFont($score_num),
+							"nickname" => (string)$user['name'],
+							//"avatar" => $user['avatar']?$user['avatar']: 'http://imgs4.graphmovie.com/appimage/app_default_avatar.jpg',
+							"coverimg" => is_null($movie['bpic'])? '':'http://avatar.graphmovie.com/boo/'.$movie['bpic'],
+							"workname" => is_null($movie['name'])? '':$movie['name'],
+							"worksubname" => is_null($movie['sub_title']) ? '':$movie['sub_title'],
+							"workscore" => $gmscore,
+							"workscorenum" => (string)number_2_numberFont($score['num']),
 							//"played" => (string)number_2_numberFont($movie['played']),
 							//"like" => (string)number_2_numberFont($movie['ding'])
 						);

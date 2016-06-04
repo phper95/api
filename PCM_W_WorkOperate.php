@@ -251,14 +251,20 @@ if($result){
 		if($work['state'] != 3) {
 			if ($work['user_id'] == $post_userid) {
 				//校验通过可以修改上线状态了
-
+				//0下线；1上线
 				if($post_operate==1){
 					$operate = 2;
 				}else{
-					$operate = 4;
+					$operate = -1;
 				}
 				if($work['state'] != $operate){
-					$query = 'UPDATE `pcmaker_work` SET `state`='.$operate.' WHERE `work_key`=\''.$post_workid.'\';';
+					if($operate === -1){
+						//`offline_type`=1 用户手动下线
+						$query = 'UPDATE `pcmaker_work` SET `state`='.$operate.',`offline_type`=1,`offline_time`=now() WHERE `work_key`=\''.$post_workid.'\';';
+					}else{
+						$query = 'UPDATE `pcmaker_work` SET `state`='.$operate.',`offline_type`=0,`submit_time`=now() WHERE `work_key`=\''.$post_workid.'\';';
+					}
+					$json['query'] = $query;
 					$res = mysqli_query($connection,$query);
 					if(!$res){
 						//服务器问题

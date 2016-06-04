@@ -37,7 +37,14 @@ define('ANDROID_SUPPORT_FLOOR_VER',37);
 //加密密钥
 define('MD_KEY', '123#@!123');
 
+//用户当天可提交的作品限制
+define('WORKS_LIMIT','1');
+
 //首个完成被官方收录的作品可获得的金币数
 define('FIRST_FINISHED_WORK_REWORD',500);
+//七牛通行证
+define('QINIU_ACCESS_KEY','odHUHoZGHamGZIG1a-NrBar-tk6GOYBlh1r6Ay7R');
+define('QINIU_SECRET_KEY','V0R_cfpI66xtfmbPqw7lWwQILohiHPGKjqlRuZxm');
+define('QINIU_BUCKET','userupload');
 
 ?>
