@@ -317,7 +317,7 @@
 						
 					}
 					
-					$json['files']['GraphEditorScript.ges'] .= '<LastEditPage>'.mysqli_num_rows($result).'</LastEditPage></ScriptContent></GraphEditorScript>';
+					$json['files']['GraphEditorScript.ges'] .= '<LastEditPage>'.mysqli_num_rows($result).'</LastEditPage><FinishCount>100</FinishCount><CreatTime>'.$work["add_time"].'</CreatTime><LastEditTime>'.$upload["add_time"].'</LastEditTime><WorkID>'.$work["work_key"].'</WorkID><SubTitle>'.$work["sub_title"].'</SubTitle><MovieType>'.$work["tags"].'</MovieType><DouBanMovieLink>'.$work["db_url"].'</DouBanMovieLink><MovieSendState>-1</MovieSendState><LastSendImage /><OkCount>0</OkCount></ScriptContent></GraphEditorScript>';
 					
 				}
 				

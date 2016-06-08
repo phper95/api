@@ -810,15 +810,31 @@
 					$ck_result = mysqli_query($connection,$query);
 					if($ck_result && mysqli_num_rows($ck_result)>0){
 						$ck_record = mysqli_fetch_assoc($ck_result);
-						$json_work['ck_feedback'] = $ck_record['content'];
-						$json_work['fb_repay_id'] = $ck_record['id'];
-						$json_work['fb_verfier_id'] = $ck_record['sender_user_id'];
+						$json_work['ck_feedback'] = is_null($ck_record['content'])?'':$ck_record['content'];
+						$json_work['fb_repay_id'] = is_null($ck_record['id'])?'':$ck_record['id'];
+						$json_work['fb_verfier_id'] = is_null($ck_record['sender_user_id'])?'':$ck_record['sender_user_id'];
+						$json_work['offline_time'] = is_null($ck_record['add_time'])?'':$ck_record['add_time'];
 					}
 				}
 
 				//state=-1用户手动下线
 				if($work['state'] ==-1){
 					$json_work['ck_feedback'] = '手动下线';
+				}
+
+				//官方退稿
+				if($work['state'] ==-3){
+					$query = 'SELECT * FROM `pcmaker_work_admin_msg` WHERE `work_id`='.$work['id'].' AND `to_user_id`='.$post_userid.' ORDER BY `add_time` DESC LIMIT 1;';
+					$ck_result = mysqli_query($connection,$query);
+				
+					if($ck_result && mysqli_num_rows($ck_result)>0){
+						$ck_record = mysqli_fetch_assoc($ck_result);
+						$json_work['ck_feedback'] = is_null($ck_record['msg'])?'':$ck_record['msg'];
+						$json_work['fb_repay_id'] = is_null($ck_record['to_user_id'])?'':$ck_record['to_user_id'];
+						$json_work['fb_verfier_id'] = is_null($ck_record['sender_user_id'])?'':$ck_record['sender_user_id'];
+						$json_work['offline_time'] = is_null($ck_record['add_time'])?'':$ck_record['add_time'];
+					}
+					
 				}
 				
 				//存储json_work

@@ -375,16 +375,22 @@
 			if($work['user_id']!=$post_userid){
 				//作品并不是该用户的
 				$need_creat_new_workkey = true;
+				//$need_creat_new_workkey = false;
 			}else{
-				//是该用户的 
+				//是该用户的
 				$need_creat_new_workkey = false;	
 			}
 			
+			
+			
 		}else{
 			//没找到
-			$need_creat_new_workkey = true;	
+			$need_creat_new_workkey = true;
 		}
 	}
+	
+	
+	
 	//var_dump($need_creat_new_workkey);
 	//如果需要生成新的workid就post到接口PCM_W_CreatWithDb 或 PCM_W_CreatWithNew 生成新的id
 	if($need_creat_new_workkey){
@@ -512,7 +518,14 @@
 	
 	$need_creat_uploadkey = false;
 	
+	//退稿作品uploadKey状态改为3-删除
+	if(isset($work['state'])&&$work['state']==-3){
+		$query = 'UPDATE `pcmaker_upload_map` SET `state`=3 WHERE `work_key`=\''.$post_workid.'\';';
+		$result = mysqli_query($connection,$query);
+	}
+	
 	//验证uploadkey
+	//$query = 'SELECT * FROM `pcmaker_upload_map` WHERE `work_key`=\''.$post_workid.'\' AND `state`<>3 ORDER BY `id` DESC LIMIT 1;';
 	$query = 'SELECT * FROM `pcmaker_upload_map` WHERE `work_key`=\''.$post_workid.'\' AND `state`<>3 ORDER BY `id` DESC LIMIT 1;';
 	$result = mysqli_query($connection,$query);
 	if($result && mysqli_num_rows($result)>0){
@@ -559,6 +572,9 @@
 		//合法 首次上传 可以上传
 		$need_creat_uploadkey = true;
 	}
+	
+	
+	
 	
 	if($need_creat_uploadkey){
 		//生成一个新的uploadkey

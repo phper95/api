@@ -194,12 +194,21 @@ if($result){
 	}
 }
 
+
 //OK TOKEN 合法
 use Qiniu\Auth;
 $auth = new Auth(QINIU_ACCESS_KEY, QINIU_SECRET_KEY);
 // 空间名  http://developer.qiniu.com/docs/v6/api/overview/concepts.html#bucket
-// 生成上传Token
-$token = $auth->uploadToken(QINIU_BUCKET);
+
+//设置回调
+$policy = array(
+      'callbackUrl' =>  'http://ser3.graphmovie.com/boo/interface/api/qi/cb.php',
+      'callbackBody' => 'bucket=$(bucket)&name=$(fname)&key=$(key)&fsize=$(fsize)&mimeType=$(mimeType)&exif=$(exif)&imageInfo=$(imageInfo)&imageAve=$(imageAve)&ext=$(ext)',
+      'saveKey'=> md5 ( uniqid ( rand (), true ))
+  );
+  // 生成上传Token
+$token = $auth->uploadToken(QINIU_BUCKET,null,7200,$policy);
+  //var_dump($policy);
 //var_dump($token);
 if(!$token){
 	if($connection)mysqli_close($connection);
