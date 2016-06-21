@@ -1,13 +1,13 @@
 <?php
 /**
-* @api {post} /gmspanel/interface/zh-cn/3.1/PCM_OFC_CreatScript.php 获取给定作品的全部脚本信息
-* @apiPermission pxseven
+* @api {post} /gmspanel/interface/zh-cn/3.1/PCM_OFC_CreatScript.php 获取给定作品的.ges的脚本信息
+* @apiPermission yongge
 * @apiVersion 0.1.0
 * @apiName CreatScript
 * @apiGroup Ofc
 * @apiSampleRequest http://ser3.graphmovie.com/gmspanel/interface/zh-cn/3.1/PCM_OFC_CreatScript.php
 
-* @apiDescription 获取给定作品Key的全部脚本信息，包括<code>GraphEditorFilmInfo</code>,<code>GraphEditorScript.ges</code>,<code>GraphEditorUserInfo</code>,<code>JsonScript.data</code>
+* @apiDescription 获取给定作品Key的.ges脚本信息，即<code>GraphEditorScript.ges</code>
 
 * @apiParam (POST) {String} [workkey=""] 需要获取脚本的作品key
 * @apiParam (POST) {String} ck="" 识别码,识别请求是否合法
@@ -18,10 +18,6 @@
 * @apiSuccess (ResponseJSON) {String} debug 接口响应出错时的过程描述,调试用.
 * @apiSuccess (ResponseJSON) {String} desc status=2时需要弹窗提示此内容.
 * @apiSuccess (ResponseJSON) {Array} files 要生成的文件名称列表.
-* @apiSuccess (ResponseJSON) {String} files.GraphEditorFilmInfo 脚本GraphEditorFilmInfo的内容字符串信息，该脚本是制作器使用的影片信息脚本，文件名"GraphEditorFilmInfo"，无格式后缀（本质是XML格式）.
-* @apiSuccess (ResponseJSON) {String} files.GraphEditorScriptges <=键名是<code>GraphEditorScript.ges</code>前面打不出来，脚本GraphEditorScript.ges的内容字符串信息，该脚本是制作器使用的解说信息脚本，文件名"GraphEditorScript.ges"，后缀ges(本质是XML格式).
-* @apiSuccess (ResponseJSON) {String} files.GraphEditorUserInfo 脚本GraphEditorUserInfo的内容字符串信息，该脚本是制作器使用的作者信息脚本，文件名"GraphEditorUserInfo"，无格式后缀（本质是XML格式）.
-* @apiSuccess (ResponseJSON) {String} files.JsonScriptdata <=键名是<code>JsonScript.data</code>前面打不出来，脚本JsonScript.data的内容字符串信息，该脚本是后台上传使用的全信息脚本（含以上三项），文件名"JsonScript.data"，后缀data（本质是JSON格式）.
 
 
 *
@@ -34,10 +30,7 @@
 *       "debug": "",
 *       "desc": "",
 *		"files": [
-*       	"GraphEditorFilmInfo": "<GraphFilmInfo><作品名>卡罗尔</作品名>...</GraphFilmInfo>",
-*       	"GraphEditorScript.ges": "<GraphEditorScript><ScriptContent><ScriptItem>...</GraphEditorScript>",
-*       	"GraphEditorUserInfo": "<GraphUserInfo><绑定邮箱>...</GraphUserInfo>",
-*       	"JsonScript.data": "{\"story\":[{\"name\":\"gm_1.PNG\",\"intro\"...\"movie_fpic\":\"01.png\"}"
+*       	"GraphEditorScript.ges": "<GraphEditorScript><ScriptContent><ScriptItem>...</GraphEditorScript>"
 *		]
 *     }
 
@@ -171,34 +164,10 @@
 	mysqli_query($connection, "SET NAMES 'UTF8'");
 	
 	$json['files'] = array(
-		"GraphEditorFilmInfo" => "",
-		"GraphEditorUserInfo" => "",
 		"GraphEditorScript.ges" => "",
-		"JsonScript.data" => ""
 	);
 	
-	$jsonscript['JsonScript.data'] = array(
-		"story" => array(),
-		"time" => "",
-		"user_email" => "",
-		"user_weiboType" => "",
-		"app_username" => "",
-		"place" => "",
-		"lovetype" => "",
-		"movie_name" => "",
-		"movie_direct" => "",
-		"movie_actor" => "",
-		"movie_score" => "",
-		"movie_time" => "",
-		"movie_countory" => "",
-		"subtitle" => "",
-		"movie_bza" => "",
-		"movie_intro" => "",
-		"movie_type" => "",
-		"movie_bpic" => "",
-		"movie_spic" => "",
-		"movie_fpic" => ""
-	);
+
 	
 	/*
 	{
@@ -232,7 +201,7 @@
 	*/
 	
 	
-	$query = 'SELECT * FROM `pcmaker_work` WHERE `work_key`=\''.$post_workkey.'\';';
+	$query = 'SELECT * FROM `pcmaker_work` WHERE `work_key`=\''.$post_workkey.'\' LIMIT 1;';
 	$result = mysqli_query($connection,$query);
 	if($result){
 		if(mysqli_num_rows($result)>0){
@@ -243,25 +212,9 @@
 			$spic_name = $work['spic_id']>0?'03.png':'';
 			$firstpage_name = $work['firstpage_id']>0?'01.png':'';
 			$tv_name = $work['tv_type']==0?'Movie':($work['tv_type']==1?'SingleTV':'SeasonTV');
-			
-			//作品信息
-			$json['files']['GraphEditorFilmInfo'] = '<GraphFilmInfo><作品名>'.$work['title'].'</作品名><作品类型>'.$tv_name.'</作品类型><季数></季数><集数></集数><导演>'.$work['author'].'</导演><主演>'.$work['actor'].'</主演><影片评分>'.$work['score'].'</影片评分><影片上映年份>'.$work['showtime'].'</影片上映年份><影片上映地区>'.$work['zone'].'</影片上映地区><副标题>'.$work['sub_title'].'</副标题><编者按>'.$work['editor_note'].'</编者按><影片简介>'.$work['intro'].'</影片简介><影片类型>'.str_replace('|','、',$work['tags']).'</影片类型><封面大图>'.$bpic_name.'</封面大图><封面小图>'.$spic_name.'</封面小图><首页海报>'.$firstpage_name.'</首页海报></GraphFilmInfo>';
-			
-			$jsonscript['JsonScript.data']['movie_name'] = $work['title'];
-			$jsonscript['JsonScript.data']['movie_direct'] = $work['author'];
-			$jsonscript['JsonScript.data']['movie_actor'] = $work['actor'];
-			$jsonscript['JsonScript.data']['movie_score'] = $work['score'];
-			$jsonscript['JsonScript.data']['movie_time'] = $work['showtime'];
-			$jsonscript['JsonScript.data']['movie_countory'] = $work['zone'];
-			$jsonscript['JsonScript.data']['subtitle'] = $work['sub_title'];
-			$jsonscript['JsonScript.data']['movie_bza'] = $work['editor_note'];
-			$jsonscript['JsonScript.data']['movie_intro'] = $work['intro'];
-			$jsonscript['JsonScript.data']['movie_type'] = str_replace('|','、',$work['tags']);
-			$jsonscript['JsonScript.data']['movie_bpic'] = $bpic_name;
-			$jsonscript['JsonScript.data']['movie_spic'] = $spic_name;
-			$jsonscript['JsonScript.data']['movie_fpic'] = $firstpage_name;
-			
-			$jsonscript['JsonScript.data']['time'] = $work['add_time'];
+			$json['work_name'] = $work['title'];
+
+
 			
 			
 			//用户信息
@@ -270,14 +223,7 @@
 			if($result && mysqli_num_rows($result)>0){
 				//找到 
 				$user = mysqli_fetch_assoc($result);
-				
-				$json['files']['GraphEditorUserInfo'] = '<GraphUserInfo><绑定邮箱>'.$user['email'].'</绑定邮箱><微博类型></微博类型><微博昵称></微博昵称><用户昵称>'.$user['name'].'</用户昵称><所在地区></所在地区><喜欢类型>'.$user['like_tag_name'].'</喜欢类型></GraphUserInfo>';
-				
-				$jsonscript['JsonScript.data']['user_email'] = $user['email'];
-				$jsonscript['JsonScript.data']['user_weiboType'] = '';
-				$jsonscript['JsonScript.data']['app_username'] = $user['name'];
-				$jsonscript['JsonScript.data']['place'] = '';
-				$jsonscript['JsonScript.data']['lovetype'] = $user['like_tag_name'];
+
 				
 			}else{
 				if($connection)mysqli_close($connection);
@@ -305,24 +251,17 @@
 					$i = 0;
 					while($i<mysqli_num_rows($result)){
 						$page = mysqli_fetch_assoc($result);
-						
-						$json['files']['GraphEditorScript.ges'] .= '<ScriptItem><Image>gm_'.($i+1).'.'.$page['type'].'</Image><Content>'.$page['intro'].'</Content></ScriptItem>';
-						
-						$jsonscript['JsonScript.data']['story'][count($jsonscript['JsonScript.data']['story'])] = array(
-							"name" => 'gm_'.($i+1).'.'.$page['type'],
-							"intro" => $page['intro']
-						);
+						if($i>=1){
+							$json['files']['GraphEditorScript.ges'] .= '<ScriptItem><Image>gm_'.($i+1).'.'.$page['type'].'</Image><Content>'.$page['intro'].'</Content></ScriptItem>';
+						}
 						
 						$i++;
 						
 					}
 					
-					$json['files']['GraphEditorScript.ges'] .= '<LastEditPage>'.mysqli_num_rows($result).'</LastEditPage></ScriptContent></GraphEditorScript>';
+					$json['files']['GraphEditorScript.ges'] .= '<LastEditPage>'.mysqli_num_rows($result).'</LastEditPage><FinishCount>100</FinishCount><CreatTime>'.$work["add_time"].'</CreatTime><LastEditTime>'.$upload["add_time"].'</LastEditTime><WorkID>'.$work["work_key"].'</WorkID><SubTitle>'.$work["sub_title"].'</SubTitle><MovieType>'.$work["tags"].'</MovieType><DouBanMovieLink>'.$work["db_url"].'</DouBanMovieLink><MovieSendState>-1</MovieSendState><LastSendImage /><OkCount>0</OkCount></ScriptContent></GraphEditorScript>';
 					
 				}
-				
-				
-				
 			}else{
 				if($connection)mysqli_close($connection);
 				$json['status']= 2;
@@ -350,8 +289,6 @@
 			die();
 		}
 	}
-	
-	$json['files']['JsonScript.data'] = json_encode($jsonscript['JsonScript.data']);
 	
 	//结束
 	$json['status']= 1;

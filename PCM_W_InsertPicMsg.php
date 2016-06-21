@@ -1,48 +1,48 @@
 <?php
 /**
-* @api {post} /gmspanel/interface/zh-cn/3.1/PCM_W_SetUpUpload1.php 准备上传（避免与内测冲突）
-* @apiPermission pxseven
+* @api {post} /gmspanel/interface/zh-cn/3.1/PCM_W_InsertPicMsg.php 提交图片上传信息
+* @apiPermission yongge
 * @apiVersion 0.1.0
-* @apiName SetUpUpload1
+* @apiName InsertPicMsg
 * @apiGroup Work
-* @apiSampleRequest http://ser3.graphmovie.com/gmspanel/interface/zh-cn/3.1/PCM_W_SetUpUpload1.php
+* @apiSampleRequest http://ser3.graphmovie.com/gmspanel/interface/zh-cn/3.1/PCM_W_InsertPicMsg.php
 
-* @apiDescription 获取上传标识uploadkey和身份签名cer准备上传,若本地客户端没有workid则补全workid
+* @apiDescription 客户端将图片上传到七牛后返回路径等信息，接口将这些信息入库
 
-* @apiParam (POST) {String} [pk=""] 用户PC的机器码(MAC地址)
-* @apiParam (POST) {Integer} [v=0] 用户GraphMovieStudios的内部版本号
-* @apiParam (POST) {String} userid 用户的userid，必须为登录用户才可访问此接口
-* @apiParam (POST) {String} token 用户的登录时返回的token，用于验证用户是否合法
-* @apiParam (POST) {String} [workid=""] 用户正在创作作品的作品ID
-* @apiParam (POST) {String} [dburl=""] 用户在关联中输入的豆瓣URL,接口会验证URL是否合法,原创作品传空字符串即可
-* @apiParam (POST) {String} [uploadkey=""] 用户作品对应的版本标识，一个work可以对应多个版本，每个版本有唯一一个uploadkey；第一次上传时没有uploadkey，发送空字符串即可；续传时有uploadkey，则发送uploadkey上来。
-* @apiParam (POST) {String} [movie_name=""] 影片信息-作品名称
-* @apiParam (POST) {String} [movie_direct=""] 影片信息-导演名
-* @apiParam (POST) {String} [movie_actor=""] 影片信息-主要演员名
-* @apiParam (POST) {String} [movie_score=""] 影片信息-影片评分
-* @apiParam (POST) {String} [movie_time=""] 影片信息-上映年份
-* @apiParam (POST) {String} [movie_countory=""] 影片信息-上映地区
-* @apiParam (POST) {String} [subtitle=""] 影片信息-副标题
-* @apiParam (POST) {String} [movie_bza=""] 影片信息-编者按
-* @apiParam (POST) {String} [movie_intro=""] 影片信息-剧情简介
-* @apiParam (POST) {String} [movie_type=""] 影片信息-影片类型 恐怖惊悚等
-* @apiParam (POST) {String} [movie_istv=""] 影片信息-剧别 0-电影 1-单季剧 2-多季剧
-* @apiParam (POST) {String} [bpic_md5=""] 影片信息-640x460封面的图片的MD5值
-* @apiParam (POST) {String} [spic_md5=""] 影片信息-640x230封面的图片的MD5值
-* @apiParam (POST) {String} [fpic_md5=""] 影片信息-960x540封面的图片的MD5值
-* @apiParam (POST) {Integer} [movie_imgcount=0] 影片的图解页数
+ * @apiParam (POST) {String} [pk=""] 用户PC的机器码(MAC地址)
+ * @apiParam (POST) {Integer} [v=0] 用户GraphMovieStudios的内部版本号
+ * @apiParam (POST) {String} userid 用户的userid，必须为登录用户才可访问此接口
+ * @apiParam (POST) {String} token 用户的登录时返回的token，用于验证用户是否合法
+ * @apiParam (POST) {String} [workid=""] 用户正在创作作品的作品ID
+ * @apiParam (POST) {String} imgJson 上传七牛后返回的json数据
+ * @apiParam (POST) {String} [dburl=""] 用户在关联中输入的豆瓣URL,接口会验证URL是否合法,原创作品传空字符串即可
+ * @apiParam (POST) {String} [uploadkey=""] 用户作品对应的版本标识，一个work可以对应多个版本，每个版本有唯一一个uploadkey；第一次上传时没有uploadkey，发送空字符串即可；续传时有uploadkey，则发送uploadkey上来。
+ * @apiParam (POST) {String} [movie_name=""] 影片信息-作品名称
+ * @apiParam (POST) {String} [movie_direct=""] 影片信息-导演名
+ * @apiParam (POST) {String} [movie_actor=""] 影片信息-主要演员名
+ * @apiParam (POST) {String} [movie_score=""] 影片信息-影片评分
+ * @apiParam (POST) {String} [movie_time=""] 影片信息-上映年份
+ * @apiParam (POST) {String} [movie_countory=""] 影片信息-上映地区
+ * @apiParam (POST) {String} [subtitle=""] 影片信息-副标题
+ * @apiParam (POST) {String} [movie_bza=""] 影片信息-编者按
+ * @apiParam (POST) {String} [movie_intro=""] 影片信息-剧情简介
+ * @apiParam (POST) {String} [movie_type=""] 影片信息-影片类型 恐怖惊悚等
+ * @apiParam (POST) {String} [movie_istv=""] 影片信息-剧别 0-电影 1-单季剧 2-多季剧
+ * @apiParam (POST) {String} [bpic_md5=""] 影片信息-640x460封面的图片的MD5值
+ * @apiParam (POST) {String} [spic_md5=""] 影片信息-640x230封面的图片的MD5值
+ * @apiParam (POST) {String} [fpic_md5=""] 影片信息-960x540封面的图片的MD5值
+ * @apiParam (POST) {Integer} [movie_imgcount=0] 影片的图解页数
 
-*
-* @apiSuccess (ResponseJSON) {Integer} status 接口响应状态（0-失败,1-成功,2-需要弹出提示框,提示desc内容）.
-* @apiSuccess (ResponseJSON) {Float} usetime 接口响应时间,调试用.
-* @apiSuccess (ResponseJSON) {String} error 接口响应出错时的错误描述.
-* @apiSuccess (ResponseJSON) {String} debug 接口响应出错时的过程描述,调试用.
-* @apiSuccess (ResponseJSON) {String} desc status=2时需要弹窗提示此内容.
-* @apiSuccess (ResponseJSON) {String} workid 如果workid为""或者workid非法(workid与userid不对应),则会生成一个新的workid返回,客户端验证如果workid不为空字符串,就覆盖本地workid.
-* @apiSuccess (ResponseJSON) {String} uploadkey 如果uploadkey为""或者uploadkey非法(workid与uploadkey不对应),则会生成一个新的uploadkey返回,客户端验证如果uploadkey不为空字符串,就覆盖本地uploadkey.
-* @apiSuccess (ResponseJSON) {String} regcer 本次上传的通信签名，用于通过imgs4服务器的身份验证，本次记录在内存中，后续上传图片时带上即可.
-* @apiSuccess (ResponseJSON) {String} error_uploadkey 如果请求参数uploadkey与服务器未完成的上传的版本uploadkey不一致（此情况出现在用户离线时选择编辑了未完成上传的作品），则返回<code>ErrorUploadkey</code>错误或<code>DnfUpload</code>，此时返回值中将含有此参数，用于请求删除未完成的版本。
-
+ *
+ * @apiSuccess (ResponseJSON) {Integer} status 接口响应状态（0-失败,1-成功,2-需要弹出提示框,提示desc内容）.
+ * @apiSuccess (ResponseJSON) {Float} usetime 接口响应时间,调试用.
+ * @apiSuccess (ResponseJSON) {String} error 接口响应出错时的错误描述.
+ * @apiSuccess (ResponseJSON) {String} debug 接口响应出错时的过程描述,调试用.
+ * @apiSuccess (ResponseJSON) {String} desc status=2时需要弹窗提示此内容.
+ * @apiSuccess (ResponseJSON) {String} workid 如果workid为""或者workid非法(workid与userid不对应),则会生成一个新的workid返回,客户端验证如果workid不为空字符串,就覆盖本地workid.
+ * @apiSuccess (ResponseJSON) {String} uploadkey 如果uploadkey为""或者uploadkey非法(workid与uploadkey不对应),则会生成一个新的uploadkey返回,客户端验证如果uploadkey不为空字符串,就覆盖本地uploadkey.
+ * @apiSuccess (ResponseJSON) {String} regcer 本次上传的通信签名，用于通过imgs4服务器的身份验证，本次记录在内存中，后续上传图片时带上即可.
+ * @apiSuccess (ResponseJSON) {String} error_uploadkey 如果请求参数uploadkey与服务器未完成的上传的版本uploadkey不一致（此情况出现在用户离线时选择编辑了未完成上传的作品），则返回<code>ErrorUploadkey</code>错误或<code>DnfUpload</code>，此时返回值中将含有此参数，用于请求删除未完成的版本。
 
 *
 * @apiSuccessExample Success-Response[提交成功]:
@@ -492,20 +492,7 @@
 					/*------------------------------------------------------------------------------------------------------------------*/
 				
 				}
-				/*
-				else{
-				//如果原创作品也生成不了workid
-				//那就只能报错返回了
-				if($connection)mysqli_close($connection);
-				$json['status']= 2;
-				$json['usetime'] = endtime($start_time);
-				$json['error'] = 'ServerError';
-				$json['desc'] = "额服务器开小差了,请稍后重试...";
-				$json_code = json_encode($json);
-				echo $json_code;
-				die();
-			}
-			*/
+
 		}
 		
 		//生成了新id
@@ -572,8 +559,6 @@
 		//合法 首次上传 可以上传
 		$need_creat_uploadkey = true;
 	}
-	
-	
 	
 	
 	if($need_creat_uploadkey){

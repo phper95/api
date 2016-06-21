@@ -525,6 +525,10 @@ if (strlen($post_movie_istv) > 0) {
 	$query .= ",`tv_type`='" . $post_movie_istv . "' ";
 }
 
+if (strlen($post_movie_score) > 0) {
+	$query .= ",`score`='" . $post_movie_score . "' ";
+}
+
 if (strlen($post_movie_snum) > 0) {
 	$query .= ",`tv_s_num`='" . $post_movie_snum . "' ";
 }

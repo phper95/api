@@ -1,13 +1,13 @@
 <?php
 /**
-* @api {post} /gmspanel/interface/zh-cn/3.1/PCM_OFC_CreatScript.php 获取给定作品的全部脚本信息
-* @apiPermission pxseven
+* @api {post} /gmspanel/interface/zh-cn/3.1/PCM_OFC_CreatScriptJson.php 获取给定作品的全部脚本信息,以json格式返回
+* @apiPermission yongge
 * @apiVersion 0.1.0
-* @apiName CreatScript
+* @apiName CreatScriptJson
 * @apiGroup Ofc
-* @apiSampleRequest http://ser3.graphmovie.com/gmspanel/interface/zh-cn/3.1/PCM_OFC_CreatScript.php
+* @apiSampleRequest http://ser3.graphmovie.com/gmspanel/interface/zh-cn/3.1/PCM_OFC_CreatScriptJson.php
 
-* @apiDescription 获取给定作品Key的全部脚本信息，包括<code>GraphEditorFilmInfo</code>,<code>GraphEditorScript.ges</code>,<code>GraphEditorUserInfo</code>,<code>JsonScript.data</code>
+* @apiDescription 获取给定作品Key的全部脚本信息,即<code>scriptJson</code>
 
 * @apiParam (POST) {String} [workkey=""] 需要获取脚本的作品key
 * @apiParam (POST) {String} ck="" 识别码,识别请求是否合法
@@ -17,29 +17,145 @@
 * @apiSuccess (ResponseJSON) {String} error 接口响应出错时的错误描述.
 * @apiSuccess (ResponseJSON) {String} debug 接口响应出错时的过程描述,调试用.
 * @apiSuccess (ResponseJSON) {String} desc status=2时需要弹窗提示此内容.
-* @apiSuccess (ResponseJSON) {Array} files 要生成的文件名称列表.
-* @apiSuccess (ResponseJSON) {String} files.GraphEditorFilmInfo 脚本GraphEditorFilmInfo的内容字符串信息，该脚本是制作器使用的影片信息脚本，文件名"GraphEditorFilmInfo"，无格式后缀（本质是XML格式）.
-* @apiSuccess (ResponseJSON) {String} files.GraphEditorScriptges <=键名是<code>GraphEditorScript.ges</code>前面打不出来，脚本GraphEditorScript.ges的内容字符串信息，该脚本是制作器使用的解说信息脚本，文件名"GraphEditorScript.ges"，后缀ges(本质是XML格式).
-* @apiSuccess (ResponseJSON) {String} files.GraphEditorUserInfo 脚本GraphEditorUserInfo的内容字符串信息，该脚本是制作器使用的作者信息脚本，文件名"GraphEditorUserInfo"，无格式后缀（本质是XML格式）.
-* @apiSuccess (ResponseJSON) {String} files.JsonScriptdata <=键名是<code>JsonScript.data</code>前面打不出来，脚本JsonScript.data的内容字符串信息，该脚本是后台上传使用的全信息脚本（含以上三项），文件名"JsonScript.data"，后缀data（本质是JSON格式）.
+* @apiSuccess (ResponseJSON) {Object} scriptJson 生成的全部json数据.
 
 
 *
 * @apiSuccessExample Success-Response[提交成功]:
 
 *     {
-*       "status": 1,
-*       "usetime": 0.0024,
-*       "error": "",
-*       "debug": "",
-*       "desc": "",
-*		"files": [
-*       	"GraphEditorFilmInfo": "<GraphFilmInfo><作品名>卡罗尔</作品名>...</GraphFilmInfo>",
-*       	"GraphEditorScript.ges": "<GraphEditorScript><ScriptContent><ScriptItem>...</GraphEditorScript>",
-*       	"GraphEditorUserInfo": "<GraphUserInfo><绑定邮箱>...</GraphUserInfo>",
-*       	"JsonScript.data": "{\"story\":[{\"name\":\"gm_1.PNG\",\"intro\"...\"movie_fpic\":\"01.png\"}"
-*		]
-*     }
+		"status": 1,
+		"usetime": "0.07139",
+		"error": "",
+		"debug": "na",
+		"desc": "",
+		"scriptJson": {
+		"scriptItem": [
+		{
+		"image": "http://imgs4.graphmovie.com/gms_works/work_imgs/f6ee0baeb3ea3b34e689616242c43105/d562484665cc1eeac0b4c69aab3f8a7c/76a4c2ec36362d91393af00c7402eb7f.jpg",
+		"intro": "大家好TAT这是发春做的第二遍……因为第一遍快做完的时候电脑重装，什么都没有了。感谢大家的不离不弃。"
+		},
+		{
+		"image": "http://imgs4.graphmovie.com/gms_works/work_imgs/f6ee0baeb3ea3b34e689616242c43105/d562484665cc1eeac0b4c69aab3f8a7c/49b580885c6f6f08d4ba3bea8fae3dd9.jpg",
+		"intro": "上一集说到，月牙收留了个声称无家可归的小妹，无心却不待见她。待月牙出门买菜时，无心才揭穿了小妹的身份——她正是井下新娘，岳绮罗。"
+		},
+		{
+		"image": "http://imgs4.graphmovie.com/gms_works/work_imgs/f6ee0baeb3ea3b34e689616242c43105/d562484665cc1eeac0b4c69aab3f8a7c/2127e8471930b1ad5d906e727d338a4e.jpg",
+		"intro": "岳绮罗被无心揭穿身份,并不恼怒,笑嘻嘻地说道:你认得我?"
+		},
+		......
+		......
+		{
+		"image": "http://imgs4.graphmovie.com/gms_works/work_imgs/f6ee0baeb3ea3b34e689616242c43105/d562484665cc1eeac0b4c69aab3f8a7c/1d8a35ef78c1f774575f31dc63da9dea.jpg",
+		"intro": "第四集就在这欢声笑语中结束了"
+		},
+		{
+		"image": "http://imgs4.graphmovie.com/gms_works/work_imgs/f6ee0baeb3ea3b34e689616242c43105/d562484665cc1eeac0b4c69aab3f8a7c/3087a12d97bc0c899ffcaf2c24287688.jpg",
+		"intro": "谢谢大家的不离不弃，你们的支持点赞是发春继续图解的动力，本学期课少，速度会提高的！（如有建议意见，欢迎留言~）"
+		}
+		],
+		"LastEditPage": 516,
+		"workInfo": {
+			"id": "75",
+			"work_key": "f6ee0baeb3ea3b34e689616242c43105",
+			"user_id": "2577356",
+			"title": "无心法师",
+			"sub_title": "打打闹闹捉妖怪，甜甜蜜蜜谈恋爱。",
+			"editor_note": "画面精致，特效还行，演员颜高，且演技自然，台词逻辑性没有硬伤，没有莫名其妙的情节，令人反感的植入，这在天雷纵横，五毛特效弥漫，演技浮夸，台词坑爹，剧情狗血的国产剧里是多么难得！",
+			"author": "林玉芬；高林豹",
+			"actor": "韩东君，金晨，陈瑶",
+			"intro": "《无心法师》是搜狐视频和唐人影视联合出品，改编自作者尼罗同名作品的民国玄幻季播网络剧，由韩东君、金晨、张若昀等联袂主演。该剧讲述了拥有不老不死之身的无心带领除邪团队，一路与恶人奸邪斗智斗勇的故事。",
+			"showtime": "2015",
+			"zone": "中国",
+			"score": "7.0",
+			"bpic_id": "10881",
+			"spic_id": "10882",
+			"firstpage_id": "10883",
+			"jian": "0",
+			"tags": "奇幻|悬疑|剧情",
+			"tags_text": "",
+			"season_id": "0",
+			"act_id": "0",
+			"page_count": "519",
+			"size": "0.00",
+			"state": "2",
+			"movie_id": "0",
+			"progress": "100",
+			"db_url": "http://movie.douban.com/subject/26298756/",
+			"db_id": "26298756",
+			"film_id": "0",
+			"add_time": "2016-02-18 22:19:40",
+			"update_time": "2016-03-09 19:56:25",
+			"save_path": "f6ee0baeb3ea3b34e689616242c43105/d562484665cc1eeac0b4c69aab3f8a7c",
+			"bpic_md5": "a9e9fc4e9b7f356fcfd53809791d7e69",
+			"spic_md5": "55fc6ca837eb68dd2655d25423c1ae50",
+			"firstpage_md5": "3fe84eea3a2e27d043bf1706d290c198",
+			"tv_type": "2",
+			"tv_s_num": "0",
+			"tv_e_num": "0",
+			"creat_time": "2016-02-18 22:19:40",
+			"submit_time": "2016-03-09 19:56:25",
+			"we_score": "8",
+			"takeon_time": null,
+			"offline_time": null,
+			"offline_type": "0"
+		},
+		"userInfo": {
+			"id": "2577356",
+			"name": "该好友最近没有发春",
+			"intro": "",
+			"email": "360342406@qq.com",
+			"phone_number": "",
+			"sex": "0",
+			"age": "0",
+			"avatar": "http://ser3.graphmovie.com/gmspanel/appimages/avatars/2577356/20160326164801.jpg",
+			"open": "1",
+			"add_time": "2015-04-03 21:29:27",
+			"update_time": "2016-06-17 17:00:41",
+			"secure_pwd_md5": "4dbfcfc131465396526085ae63f963b8",
+			"level": "1",
+			"role": "",
+			"feeling": "粉丝里有母上，评论手下留情…",
+			"avatar_bg": "http://imgs4.graphmovie.com/appimage/avatar_cover/system/user_background08.jpg",
+			"imei": "865931021005046",
+			"phone_type": "MI4LTE",
+			"pub_channel": "me",
+			"pub_platform": "android",
+			"sns_qq_id": "0",
+			"sns_qq_avatar": "",
+			"sns_qq_data": "",
+			"sns_qq_name": "",
+			"sns_qq_sex": "",
+			"sns_sinawb_id": "1799830700",
+			"sns_sinawb_avatar": "http://tva2.sinaimg.cn/crop.0.0.179.179.180/6b473cacjw1e7mgubpk3ej205005074c.jpg",
+			"sns_sinawb_data": "{\"followers_count\":\"1002\",\"profile_image_url\":\"http:\\/\\/tva2.sinaimg.cn\\/crop.0.0.179.179.180\\/6b473cacjw1e7mgubpk3ej205005074c.jpg\",\"description\":\"最近迷上了刘昊然董子健||不知道怎么给自己打标签\",\"screen_name\":\"该好友最近没有发春\",\"location\":\"福建 福州\",\"access_token\":\"2.007LunxBz5FSQD23895c8c97n9TSyB\",\"verified\":\"false\",\"gender\":\"0\",\"uid\":\"1799830700\",\"favourites_count\":\"88\",\"statuses_count\":\"7241\",\"friends_count\":\"287\",\"idstr\":\"1799830700\",\"avatar_large\":\"http:\\/\\/tva2.sinaimg.cn\\/crop.0.0.179.179.180\\/6b473cacjw1e7mgubpk3ej205005074c.jpg\"}",
+			"sns_sinawb_name": "该好友最近没有发春",
+			"sns_sinawb_sex": "0",
+			"sns_bdyts_appid": "1185357",
+			"sns_bdyts_userId": "820974229536475925",
+			"sns_bdyts_channelId": "4379381018260436707",
+			"sns_bdyts_requestId": "1277803016",
+			"sns_bdyts_data": "{\"errorCode\":0,\"appid\":\"1185357\",\"requestId\":\"1277803016\",\"channelId\":\"4379381018260436707\",\"userId\":\"820974229536475925\"}",
+			"stat_follow": "0",
+			"stat_befollow": "0",
+			"stat_belike": "25942",
+			"stat_new": "0",
+			"stat_work": "22",
+			"stat_guess_pass": "0",
+			"stat_becai": "0",
+			"stat_beshare": "295",
+			"stat_bekeep": "1726",
+			"stat_beplayed": "2462077",
+			"stat_user_commnet": "31",
+			"stat_user_new_unread": "1",
+			"ver": "64",
+			"limit_grapherlist": "0",
+			"ip": "120.35.62.141",
+			"like_tag_name": "剧情",
+			"phone_id": "07d42d7a80e724a8273e427a3af3fa76"
+				}
+		}
+}
 
 *
 * @apiError PostError 请求的参数缺失或者参数格式错误.
@@ -170,14 +286,9 @@
 	}
 	mysqli_query($connection, "SET NAMES 'UTF8'");
 	
-	$json['files'] = array(
-		"GraphEditorFilmInfo" => "",
-		"GraphEditorUserInfo" => "",
-		"GraphEditorScript.ges" => "",
-		"JsonScript.data" => ""
-	);
+	$json['scriptJson'] = array();
 	
-	$jsonscript['JsonScript.data'] = array(
+	/*$jsonscript['JsonScript.data'] = array(
 		"story" => array(),
 		"time" => "",
 		"user_email" => "",
@@ -198,7 +309,7 @@
 		"movie_bpic" => "",
 		"movie_spic" => "",
 		"movie_fpic" => ""
-	);
+	);*/
 	
 	/*
 	{
@@ -243,25 +354,7 @@
 			$spic_name = $work['spic_id']>0?'03.png':'';
 			$firstpage_name = $work['firstpage_id']>0?'01.png':'';
 			$tv_name = $work['tv_type']==0?'Movie':($work['tv_type']==1?'SingleTV':'SeasonTV');
-			
-			//作品信息
-			$json['files']['GraphEditorFilmInfo'] = '<GraphFilmInfo><作品名>'.$work['title'].'</作品名><作品类型>'.$tv_name.'</作品类型><季数></季数><集数></集数><导演>'.$work['author'].'</导演><主演>'.$work['actor'].'</主演><影片评分>'.$work['score'].'</影片评分><影片上映年份>'.$work['showtime'].'</影片上映年份><影片上映地区>'.$work['zone'].'</影片上映地区><副标题>'.$work['sub_title'].'</副标题><编者按>'.$work['editor_note'].'</编者按><影片简介>'.$work['intro'].'</影片简介><影片类型>'.str_replace('|','、',$work['tags']).'</影片类型><封面大图>'.$bpic_name.'</封面大图><封面小图>'.$spic_name.'</封面小图><首页海报>'.$firstpage_name.'</首页海报></GraphFilmInfo>';
-			
-			$jsonscript['JsonScript.data']['movie_name'] = $work['title'];
-			$jsonscript['JsonScript.data']['movie_direct'] = $work['author'];
-			$jsonscript['JsonScript.data']['movie_actor'] = $work['actor'];
-			$jsonscript['JsonScript.data']['movie_score'] = $work['score'];
-			$jsonscript['JsonScript.data']['movie_time'] = $work['showtime'];
-			$jsonscript['JsonScript.data']['movie_countory'] = $work['zone'];
-			$jsonscript['JsonScript.data']['subtitle'] = $work['sub_title'];
-			$jsonscript['JsonScript.data']['movie_bza'] = $work['editor_note'];
-			$jsonscript['JsonScript.data']['movie_intro'] = $work['intro'];
-			$jsonscript['JsonScript.data']['movie_type'] = str_replace('|','、',$work['tags']);
-			$jsonscript['JsonScript.data']['movie_bpic'] = $bpic_name;
-			$jsonscript['JsonScript.data']['movie_spic'] = $spic_name;
-			$jsonscript['JsonScript.data']['movie_fpic'] = $firstpage_name;
-			
-			$jsonscript['JsonScript.data']['time'] = $work['add_time'];
+
 			
 			
 			//用户信息
@@ -270,14 +363,6 @@
 			if($result && mysqli_num_rows($result)>0){
 				//找到 
 				$user = mysqli_fetch_assoc($result);
-				
-				$json['files']['GraphEditorUserInfo'] = '<GraphUserInfo><绑定邮箱>'.$user['email'].'</绑定邮箱><微博类型></微博类型><微博昵称></微博昵称><用户昵称>'.$user['name'].'</用户昵称><所在地区></所在地区><喜欢类型>'.$user['like_tag_name'].'</喜欢类型></GraphUserInfo>';
-				
-				$jsonscript['JsonScript.data']['user_email'] = $user['email'];
-				$jsonscript['JsonScript.data']['user_weiboType'] = '';
-				$jsonscript['JsonScript.data']['app_username'] = $user['name'];
-				$jsonscript['JsonScript.data']['place'] = '';
-				$jsonscript['JsonScript.data']['lovetype'] = $user['like_tag_name'];
 				
 			}else{
 				if($connection)mysqli_close($connection);
@@ -301,15 +386,11 @@
 				$query = 'SELECT * FROM `pcmaker_work_img` WHERE `work_key`=\''.$post_workkey.'\' AND `upload_key`=\''.$upload['upload_key'].'\' AND `page_index`>=0 ORDER BY `page_index` ASC;';
 				$result = mysqli_query($connection,$query);
 				if($result && mysqli_num_rows($result)>0){
-					$json['files']['GraphEditorScript.ges'] = '<GraphEditorScript><ScriptContent>';
 					$i = 0;
 					while($i<mysqli_num_rows($result)){
 						$page = mysqli_fetch_assoc($result);
-						
-						$json['files']['GraphEditorScript.ges'] .= '<ScriptItem><Image>gm_'.($i+1).'.'.$page['type'].'</Image><Content>'.$page['intro'].'</Content></ScriptItem>';
-						
-						$jsonscript['JsonScript.data']['story'][count($jsonscript['JsonScript.data']['story'])] = array(
-							"name" => 'gm_'.($i+1).'.'.$page['type'],
+						$json['scriptJson']['scriptItem'][] = array(
+							"image" => 'http://imgs4.graphmovie.com/gms_works'.$page['url'],
 							"intro" => $page['intro']
 						);
 						
@@ -317,8 +398,9 @@
 						
 					}
 					
-					$json['files']['GraphEditorScript.ges'] .= '<LastEditPage>'.mysqli_num_rows($result).'</LastEditPage></ScriptContent></GraphEditorScript>';
-					
+					$json['scriptJson']['lastEditPage'] = mysqli_num_rows($result);
+					$json['scriptJson']['workInfo'] = $work;
+					$json['scriptJson']['userInfo'] = $user;
 				}
 				
 				
@@ -350,8 +432,6 @@
 			die();
 		}
 	}
-	
-	$json['files']['JsonScript.data'] = json_encode($jsonscript['JsonScript.data']);
 	
 	//结束
 	$json['status']= 1;
