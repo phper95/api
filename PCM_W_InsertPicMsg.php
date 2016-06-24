@@ -181,7 +181,7 @@ require_once(dirname(__FILE__).'/'.'inc/post.methods.inc.php');
 		}
 
 		if(isset($data->imgdata)){
-			$post_imgdata = htmlspecialchars(addslashes($data->imgdata));
+			$post_imgdata = $data->imgdata;
 		}
 		
 		
@@ -202,7 +202,7 @@ require_once(dirname(__FILE__).'/'.'inc/post.methods.inc.php');
 		$post_regcer = htmlspecialchars(addslashes($_POST['regcer']));
 		if(isset($_POST['pageindex'])){$post_pageindex = htmlspecialchars(addslashes($_POST['pageindex']));}
 		if(isset($_POST['intro'])){$post_intro = htmlspecialchars(addslashes($_POST['intro']));}
-		if(isset($_POST['imgdata'])){$post_imgdata = htmlspecialchars(addslashes($_POST['imgdata']));}
+		if(isset($_POST['imgdata'])){$post_imgdata = $_POST['imgdata'];}
 
 	}else{
 		//缺少参数
@@ -261,18 +261,19 @@ require_once(dirname(__FILE__).'/'.'inc/post.methods.inc.php');
 }
  */
 
-	$img_info=json_decode($post_imgdata);
+$img_info_arr = json_decode($post_imgdata,true);
 	//调试用
-if($img_info && isset($img_info->succ)){
-	$save_img_type = ltrim($img_info->ext,'.');
-	$save_img_size = $img_info->fsize;
-	$save_img_height = $img_info->imageInfo->height;
-	$save_img_width = $img_info->imageInfo->width;
-	$save_img_file = $img_info->url;
+//var_dump($img_info_arr);
+//$json['img_data'] = $post_imgdata;
+if($img_info_arr && isset($img_info_arr["succ"])){
+	$save_img_type = ltrim($img_info_arr["ext"],'.');
+	$save_img_size = $img_info_arr["fsize"];
+	$img_info = json_decode($img_info_arr["imageInfo"],true);
+	$save_img_height = $img_info["height"];
+	$save_img_width = $img_info["width"];
+	$save_img_file = $img_info_arr["url"];
+	$save_img_md5 = md5_file($save_img_file);
 }
-	$file = 'imglog.log';
-	file_put_contents($file, $img_info,FILE_APPEND);
-
 
 
 
@@ -314,6 +315,8 @@ if($img_info && isset($img_info->succ)){
 	//file_put_contents('6.txt',$response_json.PHP_EOL,FILE_APPEND);
 	
 	$json_struct = @json_decode($response_json);
+//var_dump($post_string);
+//var_dump($json_struct);
 	if($json_struct && isset($json_struct->status)){
 		if($json_struct->status==1){
 			//记录成功了

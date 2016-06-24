@@ -203,13 +203,18 @@ $auth = new Auth(QINIU_ACCESS_KEY, QINIU_SECRET_KEY);
 //设置回调
 $policy = array(
       'callbackUrl' =>  'http://ser3.graphmovie.com/boo/interface/api/qi/cb.php',
-      'callbackBody' => 'bucket=$(bucket)&name=$(fname)&key=$(key)&fsize=$(fsize)&mimeType=$(mimeType)&exif=$(exif)&imageInfo=$(imageInfo)&imageAve=$(imageAve)&ext=$(ext)',
+      'callbackBody' => 'bucket=$(bucket)&key=$(key)&fsize=$(fsize)&mimeType=$(mimeType)&exif=$(exif)&imageInfo=$(imageInfo)&imageAve=$(imageAve)&ext=$(ext)',
       'saveKey'=> md5 ( uniqid ( rand (), true ))
   );
   // 生成上传Token
 $token = $auth->uploadToken(QINIU_BUCKET,null,7200,$policy);
   //var_dump($policy);
 //var_dump($token);
+
+//$json = '{"a":100,"b":200,"c":300,"d":400,"e":500}';
+
+
+
 if(!$token){
 	if($connection)mysqli_close($connection);
 	$json['status']= 2;
