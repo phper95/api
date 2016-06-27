@@ -528,7 +528,8 @@ $post_string = 'ck='.strtolower(md5($subject_id.'graphmoviestudiosapi')).'&subid
 	$popdesc = '';
 	$query = 'SELECT *, count(`user_id`) FROM `pcmaker_work` WHERE `db_id`=\''.$subject_id.'\' AND `state`=1 GROUP BY `user_id`;';
 	//只需取五条且user_id不同
-	$query1 = 'SELECT *,count(`user_id`) FROM `pcmaker_work` WHERE `db_id`=\''.$subject_id.'\' AND `state`=1 GROUP BY `user_id` LIMIT 5;';
+	//$query1 = 'SELECT `user_id`,`work_key`,`submit_time`,`progress`,max(`id`) FROM `pcmaker_work` WHERE `db_id`=\''.$subject_id.'\' AND `state`=1 GROUP BY `user_id` ORDER BY `id` DESC LIMIT 5;';
+	$query1 = 'SELECT WORK .id, WORK .user_id, WORK .db_id, WORK .work_key, WORK .submit_time, WORK .state, WORK .progress FROM ( SELECT `id`, `user_id`, `db_id`, `work_key`, `submit_time`, `state`, `progress` FROM pcmaker_work ORDER BY `id` DESC ) AS WORK WHERE `db_id`=\''.$subject_id.'\' AND `state` = 1 GROUP BY `user_id` LIMIT 5;';
 
 	$result = mysqli_query($connection,$query);
 	//$json['query'] = $query1;
@@ -590,7 +591,7 @@ $post_string = 'ck='.strtolower(md5($subject_id.'graphmoviestudiosapi')).'&subid
 
 	$query = 'SELECT * FROM `mdb_movie_v_link` WHERE `link_type`=1 AND `link_url` LIKE \'%douban.com/subject/'.$subject_id.'/%\';';
 	//只查2条记录用于界面显示
-	$query2 = 'SELECT * FROM `mdb_movie_v_link` WHERE `link_type`=1 AND `link_url` LIKE \'%douban.com/subject/'.$subject_id.'/%\' ORDER BY `add_time` LIMIT 2;';
+	$query2 = 'SELECT * FROM `mdb_movie_v_link` WHERE `link_type`=1 AND `link_url` LIKE \'%douban.com/subject/'.$subject_id.'/%\' ORDER BY `id` DESC LIMIT 2;';
 	$result = mysqli_query($connection,$query);
 	$result2 = mysqli_query($connection,$query2);
 	//已上线作品数
